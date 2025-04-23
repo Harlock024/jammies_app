@@ -1,82 +1,88 @@
 import 'package:flutter/material.dart';
+import 'package:jammies_app/models/track.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+import "package:jammies_app/screens/home.dart";
+import 'package:jammies_app/screens/library.dart';
+import 'package:jammies_app/screens/search.dart';
+import 'package:jammies_app/widgets/player/full_player.dart';
+import 'package:jammies_app/widgets/player/mini_player.dart';
+
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    return MaterialApp(title: 'App con Tabs', home: IndexPage());
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
+class IndexPage extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _IndexPageState createState() => _IndexPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _IndexPageState extends State<IndexPage> {
+  int currentIndex = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  final List<Widget> pages = [HomeScreen(), SearchScreen(), LibraryScreen()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: Stack(
+        children: [
+          pages[currentIndex], // página principal
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0, // espacio sobre el BottomNavigationBar
+            child: MiniPlayer(
+              track: Track(
+                id: '1',
+                title: 'Test Track',
+                artist: 'Test Artist',
+                album: 'Test Album',
+                duration: '3:20',
+                coverUrl:
+                    'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
+              ),
+              onTap: () => openFullPlayer(context),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: (index) => setState(() => currentIndex = index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Buscar'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_music),
+            label: 'Perfil',
+          ),
+        ],
+      ),
+    );
+  }
+
+  void openFullPlayer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (_) => FullPlayerOverlay(
+            track: Track(
+              id: '1',
+              title: 'Test Track',
+              artist: 'Test Artist',
+              album: 'Test Album',
+              duration: '3:20',
+              coverUrl:
+                  'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
+            ),
+          ),
     );
   }
 }
