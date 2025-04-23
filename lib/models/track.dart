@@ -5,6 +5,7 @@ class Track {
   String album;
   String duration;
   String coverUrl;
+  String audioUrl;
 
   Track({
     required this.id,
@@ -13,5 +14,6 @@ class Track {
     required this.album,
     required this.duration,
     required this.coverUrl,
+    required this.audioUrl,
   });
 }

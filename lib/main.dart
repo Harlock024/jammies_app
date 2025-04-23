@@ -31,11 +31,11 @@ class _IndexPageState extends State<IndexPage> {
     return Scaffold(
       body: Stack(
         children: [
-          pages[currentIndex], // página principal
+          pages[currentIndex],
           Positioned(
             left: 0,
             right: 0,
-            bottom: 0, // espacio sobre el BottomNavigationBar
+            bottom: 0,
             child: MiniPlayer(
               track: Track(
                 id: '1',
@@ -45,6 +45,7 @@ class _IndexPageState extends State<IndexPage> {
                 duration: '3:20',
                 coverUrl:
                     'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
+                audioUrl: './mocks/music/Consumer.mp3',
               ),
               onTap: () => openFullPlayer(context),
             ),
@@ -72,8 +73,10 @@ class _IndexPageState extends State<IndexPage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder:
-          (_) => FullPlayerOverlay(
+          (_) => PlayerScreen(
             track: Track(
+              audioUrl:
+                  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
               id: '1',
               title: 'Test Track',
               artist: 'Test Artist',

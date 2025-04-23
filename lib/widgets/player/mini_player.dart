@@ -11,25 +11,30 @@ class MiniPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+
       child: Container(
         height: 70,
         color: Colors.grey[900],
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           children: [
-            Icon(Icons.music_note, color: Colors.white),
-            SizedBox(width: 16),
             Expanded(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
+
                 children: [
                   Row(
+                    spacing: 8,
                     children: [
-                      Image.network(
-                        track.coverUrl,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          track.coverUrl,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                       Column(
                         children: [
@@ -56,6 +61,8 @@ class MiniPlayer extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(height: 8),
+            Icon(Icons.play_arrow, color: Colors.white),
           ],
         ),
       ),
