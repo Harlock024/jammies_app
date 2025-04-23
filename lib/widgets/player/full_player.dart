@@ -71,26 +71,34 @@ class _PlayerScreenState extends State<PlayerScreen> {
             const SizedBox(height: 24),
             SizedBox(
               width: 250,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    widget.track.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Column(
+                    children: [
+                      Text(
+                        widget.track.title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.track.artist,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    widget.track.artist,
-                    style: const TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
+                  Icon(Icons.favorite_border, color: Colors.white),
                 ],
               ),
             ),
-
             SizedBox(height: 30),
             Slider(
               value: sliderValue,

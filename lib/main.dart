@@ -45,7 +45,8 @@ class _IndexPageState extends State<IndexPage> {
                 duration: '3:20',
                 coverUrl:
                     'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-                audioUrl: './mocks/music/Consumer.mp3',
+                audioUrl:
+                    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
               ),
               onTap: () => openFullPlayer(context),
             ),
@@ -75,8 +76,6 @@ class _IndexPageState extends State<IndexPage> {
       builder:
           (_) => PlayerScreen(
             track: Track(
-              audioUrl:
-                  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
               id: '1',
               title: 'Test Track',
               artist: 'Test Artist',
@@ -84,6 +83,8 @@ class _IndexPageState extends State<IndexPage> {
               duration: '3:20',
               coverUrl:
                   'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
+              audioUrl:
+                  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
             ),
           ),
     );
