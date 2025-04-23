@@ -5,7 +5,7 @@ import 'package:just_audio/just_audio.dart';
 class PlayerScreen extends StatefulWidget {
   final Track track;
 
-  PlayerScreen({super.key, required this.track});
+  const PlayerScreen({super.key, required this.track});
 
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
@@ -15,26 +15,39 @@ class _PlayerScreenState extends State<PlayerScreen> {
   late AudioPlayer _audioPlayer;
   Duration _currentPosition = Duration.zero;
   Duration _totalDuration = Duration.zero;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
-    _audioPlayer.setUrl(widget.track.audioUrl);
+    _initAudioPlayer();
+  }
 
-    _audioPlayer.durationStream.listen((duration) {
-      if (duration != null) {
-        setState(() {
-          _totalDuration = duration;
-        });
-      }
-    });
+  Future<void> _initAudioPlayer() async {
+    try {
+      await _audioPlayer.setUrl(widget.track.audioUrl);
 
-    _audioPlayer.positionStream.listen((position) {
-      setState(() {
-        _currentPosition = position;
+      _audioPlayer.durationStream.listen((duration) {
+        if (duration != null) {
+          setState(() {
+            _totalDuration = duration;
+            _isLoading = false;
+          });
+        }
       });
-    });
+
+      _audioPlayer.positionStream.listen((position) {
+        setState(() {
+          _currentPosition = position;
+        });
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al cargar el audio: $e')));
+    }
   }
 
   @override
@@ -52,110 +65,212 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Padding(
-        padding: const EdgeInsets.all(24),
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment:
-              CrossAxisAlignment.center, // centro para todos los elementos
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                widget.track.coverUrl,
-                width: 250,
-                height: 250,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: 250,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    children: [
-                      Text(
-                        widget.track.title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        widget.track.artist,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                  Icon(Icons.favorite_border, color: Colors.white),
+                  const Text(
+                    "My Playlist",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.more_vert, color: Colors.white),
+                    onPressed: () {},
+                  ),
                 ],
               ),
             ),
-            SizedBox(height: 30),
-            Slider(
-              value: sliderValue,
-              onChanged: (value) {
-                final newPosition = _totalDuration * value;
-                _audioPlayer.seek(newPosition);
-              },
-              activeColor: Color(0xFF86CECB),
-              inactiveColor: Colors.white24,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  formatDuration(_currentPosition),
-                  style: TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  formatDuration(_totalDuration),
-                  style: TextStyle(color: Colors.white70),
-                ),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                IconButton(
-                  iconSize: 32,
-                  icon: Icon(Icons.skip_previous),
-                  onPressed: () {
-                    _audioPlayer.seek(Duration.zero);
+
+            // Portada del álbum
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  widget.track.coverUrl,
+                  width: 320,
+                  height: 320,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      width: 320,
+                      height: 320,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[800],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF86CECB),
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 320,
+                      height: 320,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[800],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.music_note,
+                        color: Colors.white70,
+                        size: 80,
+                      ),
+                    );
                   },
                 ),
-                IconButton(
-                  iconSize: 32,
-                  icon: Icon(
-                    _audioPlayer.playing
-                        ? Icons.pause_circle
-                        : Icons.play_circle,
-                    size: 64,
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            // Información de la canción
+            Column(
+              children: [
+                Text(
+                  widget.track.title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
                     color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                   ),
-                  onPressed: () {
-                    _audioPlayer.playing
-                        ? _audioPlayer.pause()
-                        : _audioPlayer.play();
-                  },
                 ),
-                IconButton(
-                  iconSize: 32,
-                  icon: Icon(Icons.skip_next),
-                  onPressed: () {
-                    _audioPlayer.seek(_totalDuration);
-                  },
+                const SizedBox(height: 8),
+                Text(
+                  widget.track.artist.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+
+            // Barra de progreso
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  Slider(
+                    value: sliderValue,
+                    onChanged:
+                        _isLoading
+                            ? null
+                            : (value) {
+                              final newPosition = _totalDuration * value;
+                              _audioPlayer.seek(newPosition);
+                            },
+                    activeColor: const Color(0xFF86CECB),
+                    inactiveColor: Colors.white24,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        formatDuration(_currentPosition),
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                      Text(
+                        formatDuration(_totalDuration),
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            // Controles de reproducción
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  const Icon(Icons.shuffle, color: Colors.white70, size: 28),
+                  IconButton(
+                    iconSize: 32,
+                    icon: const Icon(Icons.skip_previous, color: Colors.white),
+                    onPressed:
+                        _isLoading
+                            ? null
+                            : () => _audioPlayer.seek(Duration.zero),
+                  ),
+                  IconButton(
+                    iconSize: 64,
+                    icon:
+                        _isLoading
+                            ? const CircularProgressIndicator(
+                              color: Color(0xFF86CECB),
+                            )
+                            : Icon(
+                              _audioPlayer.playing
+                                  ? Icons.pause_circle
+                                  : Icons.play_circle,
+                              color: Colors.white,
+                            ),
+                    onPressed:
+                        _isLoading
+                            ? null
+                            : () {
+                              _audioPlayer.playing
+                                  ? _audioPlayer.pause()
+                                  : _audioPlayer.play();
+                            },
+                  ),
+                  IconButton(
+                    iconSize: 32,
+                    icon: const Icon(Icons.skip_next, color: Colors.white),
+                    onPressed:
+                        _isLoading
+                            ? null
+                            : () => _audioPlayer.seek(_totalDuration),
+                  ),
+                  const Icon(Icons.repeat, color: Colors.white70, size: 28),
+                ],
+              ),
+            ),
+
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 40),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.speaker_sharp,
+                        color: Colors.white70,
+                        size: 28,
+                      ),
+                      const Text(
+                        "Devices",
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
