@@ -20,7 +20,6 @@ class GreetingScreen extends StatelessWidget {
               width: 150,
               scale: 1.0,
             ),
-
             const SizedBox(height: 24),
             Text(
               '¡Bienvenido a Jammies!',
@@ -40,12 +39,12 @@ class GreetingScreen extends StatelessWidget {
             const SizedBox(height: 48),
             ElevatedButton(
               onPressed: onContinue,
-              child: Text('Empezar'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF86CECB),
                 foregroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
+              child: Text('Empezar'),
             ),
           ],
         ),

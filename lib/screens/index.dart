@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:jammies_app/models/track.dart';
+import 'package:jammies_app/models/user.dart';
+
 import 'package:jammies_app/screens/home.dart';
 import 'package:jammies_app/screens/library.dart';
 import 'package:jammies_app/screens/search.dart';
-import 'package:jammies_app/widgets/player/full_player.dart';
-import 'package:jammies_app/widgets/player/mini_player.dart';
+import 'package:jammies_app/widgets/layout/app_layout.dart';
 
 class IndexPage extends StatefulWidget {
   @override
@@ -13,35 +13,22 @@ class IndexPage extends StatefulWidget {
 
 class _IndexPageState extends State<IndexPage> {
   int currentIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final List<Widget> pages = [HomeScreen(), SearchScreen(), LibraryScreen()];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          pages[currentIndex],
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: MiniPlayer(
-              track: Track(
-                id: '1',
-                title: 'Test Track',
-                artist: 'Test Artist',
-                album: 'Test Album',
-                duration: '3:20',
-                coverUrl:
-                    'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-                audioUrl:
-                    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-              ),
-              onTap: () => openFullPlayer(context),
-            ),
-          ),
-        ],
+    return AppLayout(
+      scaffoldKey: _scaffoldKey,
+      onDrawerTap: () => _scaffoldKey.currentState?.openDrawer(),
+      child: pages[currentIndex],
+      user: User(
+        id: "1",
+        name: 'Harlock024',
+        email: 'harlock024@gmail.com',
+        avatarUrl:
+            "https://res.cloudinary.com/drdefvojb/image/upload/v1724779733/proyects_uv/k3o6eoted3lma2uzgbme.png",
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
@@ -55,28 +42,6 @@ class _IndexPageState extends State<IndexPage> {
           ),
         ],
       ),
-    );
-  }
-
-  void openFullPlayer(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder:
-          (_) => PlayerScreen(
-            track: Track(
-              id: '1',
-              title: 'Test Track',
-              artist: 'Test Artist',
-              album: 'Test Album',
-              duration: '3:20',
-              coverUrl:
-                  'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-              audioUrl:
-                  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-            ),
-          ),
     );
   }
 }

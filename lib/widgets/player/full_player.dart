@@ -93,7 +93,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
               ),
             ),
 
-            // Portada del álbum
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
@@ -199,7 +198,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
             ),
             const SizedBox(height: 30),
 
-            // Controles de reproducción
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
