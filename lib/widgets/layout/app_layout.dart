@@ -18,6 +18,7 @@ class AppLayout extends StatelessWidget {
     this.bottomNavigationBar,
     required this.user,
   });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +36,7 @@ class AppLayout extends StatelessWidget {
                   spacing: 8,
                   children: [
                     Image.network(user.avatarUrl!, width: 48, height: 48),
+
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
