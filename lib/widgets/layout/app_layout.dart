@@ -36,18 +36,13 @@ class AppLayout extends StatelessWidget {
                   children: [
                     Image.network(user.avatarUrl!, width: 48, height: 48),
 
-                    const SizedBox(width: 8),
-
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(user.name, style: TextStyle(color: Colors.white)),
 
-                        Text(
-                          "Ver Perfil",
-                          style: TextStyle(color: Colors.grey),
-                        ),
+                        Text("Ver Pefil", style: TextStyle(color: Colors.grey)),
                       ],
                     ),
                   ],
