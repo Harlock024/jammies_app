@@ -1,6 +1,5 @@
 import 'package:jammies_app/models/post.dart';
 import 'package:jammies_app/models/user.dart';
-import 'package:jammies_app/models/track.dart';
 
 final List<Post> mockPosts = [
   Post(

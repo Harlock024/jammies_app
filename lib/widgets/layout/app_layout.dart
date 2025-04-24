@@ -33,17 +33,28 @@ class AppLayout extends StatelessWidget {
                 onTap: () {},
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  spacing: 8,
                   children: [
+<<<<<<< HEAD
                     Image.network(user.avatarUrl!, width: 48, height: 48),
 
+=======
+                    Image.network(user.avatarUrl, width: 48, height: 48),
+                    const SizedBox(width: 8),
+>>>>>>> af8c14f (feat: tabs added)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(user.name, style: TextStyle(color: Colors.white)),
+<<<<<<< HEAD
 
                         Text("Ver Pefil", style: TextStyle(color: Colors.grey)),
+=======
+                        Text(
+                          "Ver Perfil",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+>>>>>>> af8c14f (feat: tabs added)
                       ],
                     ),
                   ],
@@ -94,6 +105,7 @@ class AppLayout extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: bottomNavigationBar,
     );
   }
 }
