@@ -1,92 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:jammies_app/models/track.dart';
+import 'package:jammies_app/AppRoot.dart';
+import 'package:jammies_app/providers/auth_provider.dart';
+import 'package:jammies_app/screens/auth/login.dart';
+import 'package:jammies_app/screens/auth/register.dart';
 
-import "package:jammies_app/screens/home.dart";
-import 'package:jammies_app/screens/library.dart';
-import 'package:jammies_app/screens/search.dart';
-import 'package:jammies_app/widgets/player/full_player.dart';
-import 'package:jammies_app/widgets/player/mini_player.dart';
+import 'package:jammies_app/screens/index.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final isFirstTime = prefs.getBool('isFirstTime') ?? true;
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AuthProvider(),
+      child: MyApp(isFirstTime: isFirstTime),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(title: 'App con Tabs', home: IndexPage());
-  }
-}
-
-class IndexPage extends StatefulWidget {
-  @override
-  _IndexPageState createState() => _IndexPageState();
-}
-
-class _IndexPageState extends State<IndexPage> {
-  int currentIndex = 0;
-
-  final List<Widget> pages = [HomeScreen(), SearchScreen(), LibraryScreen()];
+  final bool isFirstTime;
+  const MyApp({super.key, required this.isFirstTime});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          pages[currentIndex],
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: MiniPlayer(
-              track: Track(
-                id: '1',
-                title: 'Test Track',
-                artist: 'Test Artist',
-                album: 'Test Album',
-                duration: '3:20',
-                coverUrl:
-                    'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-                audioUrl:
-                    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-              ),
-              onTap: () => openFullPlayer(context),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (index) => setState(() => currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Buscar'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_music),
-            label: 'Perfil',
-          ),
-        ],
-      ),
-    );
-  }
-
-  void openFullPlayer(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder:
-          (_) => PlayerScreen(
-            track: Track(
-              id: '1',
-              title: 'Test Track',
-              artist: 'Test Artist',
-              album: 'Test Album',
-              duration: '3:20',
-              coverUrl:
-                  'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-              audioUrl:
-                  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-            ),
-          ),
+    return MaterialApp(
+      title: 'Jammies App',
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => AppRoot(isFirstTime: isFirstTime),
+        '/login': (context) => const LoginScreen(),
+        '/index': (context) => IndexPage(),
+        '/register': (context) => RegisterScreen(),
+      },
     );
   }
 }

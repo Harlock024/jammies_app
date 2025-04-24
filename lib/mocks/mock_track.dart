@@ -1,4 +1,4 @@
-import '../../models/track.dart';
+import '../models/track.dart';
 
 final List<Track> mockTracks = [
   Track(

@@ -1,21 +1,22 @@
-// lib/screens/home.dart
-
 import 'package:flutter/material.dart';
-import 'package:jammies_app/mocks/tracks/mock_track.dart';
-import 'package:jammies_app/widgets/tracks/track_card.dart';
+import 'package:jammies_app/mocks/mock_post.dart';
+import 'package:jammies_app/widgets/posts/post_card.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom + 110;
+
     return Scaffold(
       appBar: AppBar(title: Text('Inicio')),
       body: ListView.builder(
-        itemCount: mockTracks.length,
+        padding: EdgeInsets.only(bottom: bottomPadding),
+        itemCount: mockPosts.length,
         itemBuilder: (context, index) {
-          final track = mockTracks[index];
+          final post = mockPosts[index];
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: TrackCard(track: track),
+            child: PostCard(post: post),
           );
         },
       ),
