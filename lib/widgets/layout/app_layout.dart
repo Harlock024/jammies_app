@@ -18,7 +18,6 @@ class AppLayout extends StatelessWidget {
     this.bottomNavigationBar,
     required this.user,
   });
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,23 +29,19 @@ class AppLayout extends StatelessWidget {
             DrawerHeader(
               decoration: BoxDecoration(color: Color(0xFF292929)),
               child: InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, '/my-profile');
-                },
+                onTap: () {},
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 8,
                   children: [
                     Image.network(user.avatarUrl!, width: 48, height: 48),
-                    const SizedBox(width: 8),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(user.name, style: TextStyle(color: Colors.white)),
-                        Text(
-                          "Ver Perfil",
-                          style: TextStyle(color: Colors.grey),
-                        ),
+
+                        Text("Ver Pefil", style: TextStyle(color: Colors.grey)),
                       ],
                     ),
                   ],
@@ -65,6 +60,7 @@ class AppLayout extends StatelessWidget {
         leading: IconButton(
           icon: ClipRRect(
             borderRadius: BorderRadius.circular(24),
+
             child: Image.network(user.avatarUrl!),
           ),
           onPressed: onDrawerTap,
