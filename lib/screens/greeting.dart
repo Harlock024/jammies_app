@@ -14,6 +14,14 @@ class GreetingScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.network(
+              'https://res.cloudinary.com/drdefvojb/image/upload/v1745478191/proyects_uv/xn0qn2jzql2pnwowfltq.png',
+              height: 150,
+              width: 150,
+              scale: 1.0,
+            ),
+
+            const SizedBox(height: 24),
             Text(
               '¡Bienvenido a Jammies!',
               style: TextStyle(
