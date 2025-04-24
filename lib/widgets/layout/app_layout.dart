@@ -35,7 +35,6 @@ class AppLayout extends StatelessWidget {
                   spacing: 8,
                   children: [
                     Image.network(user.avatarUrl!, width: 48, height: 48),
-
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -93,7 +92,6 @@ class AppLayout extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: bottomNavigationBar,
     );
   }
 }
