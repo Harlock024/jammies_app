@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jammies_app/widgets/album/album_card.dart';
+import 'package:jammies_app/widgets/album/album_list.dart';
 import 'package:jammies_app/widgets/playlists/playlist_list.dart';
 import 'package:jammies_app/widgets/posts/post_list.dart';
 import 'package:jammies_app/widgets/tracks/tracks_list.dart';
@@ -86,6 +88,6 @@ class _PlaylistsTab extends StatelessWidget {
 class _AlbumsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("Álbumes del usuario"));
+    return AlbumGrid();
   }
 }
