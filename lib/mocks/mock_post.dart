@@ -23,6 +23,7 @@ final List<Post> mockPosts = [
         'https://res.cloudinary.com/drdefvojb/image/upload/v1724779733/proyects_uv/k3o6eoted3lma2uzgbme.png',
 
     isLikedByMe: false,
+    track: null,
   ),
   Post(
     id: '2',
@@ -44,5 +45,29 @@ final List<Post> mockPosts = [
         'https://res.cloudinary.com/drdefvojb/image/upload/v1724779733/proyects_uv/k3o6eoted3lma2uzgbme.png',
 
     isLikedByMe: false,
+    track: null,
+  ),
+  Post(
+    id: '3',
+    title: 'Flutter is awesome',
+    content:
+        'Flutter is a powerful framework for building cross-platform apps.',
+    author: User(
+      id: '3',
+      name: 'John Doe',
+      avatarUrl:
+          'https://res.cloudinary.com/drdefvojb/image/upload/v1724779733/proyects_uv/k3o6eoted3lma2uzgbme.png',
+      email: 'john.doe@example.com',
+    ),
+    createdAt: DateTime.now(),
+    userId: '3',
+    timestamp: DateTime.now().toString(),
+    commentsCount: 0,
+    likesCount: 0,
+    imageUrl:
+        'https://res.cloudinary.com/drdefvojb/image/upload/v1724779733/proyects_uv/k3o6eoted3lma2uzgbme.png',
+
+    isLikedByMe: false,
+    track: null,
   ),
 ];

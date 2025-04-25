@@ -23,7 +23,7 @@ class PostCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(25),
                   child: Image.network(
-                    post.author.avatarUrl,
+                    post.author.avatarUrl!,
                     width: 50,
                     height: 50,
                     fit: BoxFit.cover,
@@ -65,7 +65,6 @@ class PostCard extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            /// ACTIONS: Like, Comment, Share
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
