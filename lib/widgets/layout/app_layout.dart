@@ -30,31 +30,26 @@ class AppLayout extends StatelessWidget {
             DrawerHeader(
               decoration: BoxDecoration(color: Color(0xFF292929)),
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, '/my-profile');
+                },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-<<<<<<< HEAD
                     Image.network(user.avatarUrl!, width: 48, height: 48),
 
-=======
-                    Image.network(user.avatarUrl, width: 48, height: 48),
-                    const SizedBox(width: 8),
->>>>>>> af8c14f (feat: tabs added)
+                    Image.network(user.avatarUrl!, width: 48, height: 48),
+
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(user.name, style: TextStyle(color: Colors.white)),
-<<<<<<< HEAD
 
-                        Text("Ver Pefil", style: TextStyle(color: Colors.grey)),
-=======
                         Text(
                           "Ver Perfil",
                           style: TextStyle(color: Colors.grey),
                         ),
->>>>>>> af8c14f (feat: tabs added)
                       ],
                     ),
                   ],
