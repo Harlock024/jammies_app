@@ -5,10 +5,17 @@ class Playlist {
   String name;
   String userId;
   User author;
+  String? description;
+  String? coverUrl;
+  int trackCount;
+
   Playlist({
     required this.id,
     required this.name,
     required this.author,
     required this.userId,
+    required this.trackCount,
+    this.description,
+    this.coverUrl,
   });
 }
