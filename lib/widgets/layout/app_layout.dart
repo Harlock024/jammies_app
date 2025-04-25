@@ -24,6 +24,7 @@ class AppLayout extends StatelessWidget {
     return Scaffold(
       key: scaffoldKey,
       drawer: Drawer(
+        backgroundColor: Color(0xFF292929),
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -37,15 +38,12 @@ class AppLayout extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.network(user.avatarUrl!, width: 48, height: 48),
-
-                    Image.network(user.avatarUrl!, width: 48, height: 48),
-
+                    SizedBox(width: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(user.name, style: TextStyle(color: Colors.white)),
-
                         Text(
                           "Ver Perfil",
                           style: TextStyle(color: Colors.grey),
@@ -58,9 +56,18 @@ class AppLayout extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.settings),
-              title: Text('Configuración'),
+              title: Text(
+                'Configuración',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-            ListTile(leading: Icon(Icons.logout), title: Text('Cerrar sesión')),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text(
+                'Cerrar sesión',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
           ],
         ),
       ),
