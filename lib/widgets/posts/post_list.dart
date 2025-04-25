@@ -10,6 +10,7 @@ class PostList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView.builder(
+        physics: const BouncingScrollPhysics(),
         itemCount: mockPosts.length,
         itemBuilder: (context, index) {
           final post = mockPosts[index];
