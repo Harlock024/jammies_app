@@ -30,11 +30,13 @@ class AppLayout extends StatelessWidget {
             DrawerHeader(
               decoration: BoxDecoration(color: Color(0xFF292929)),
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, '/my-profile');
+                },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.network(user.avatarUrl, width: 48, height: 48),
+                    Image.network(user.avatarUrl!, width: 48, height: 48),
                     const SizedBox(width: 8),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,7 +65,7 @@ class AppLayout extends StatelessWidget {
         leading: IconButton(
           icon: ClipRRect(
             borderRadius: BorderRadius.circular(24),
-            child: Image.network(user.avatarUrl),
+            child: Image.network(user.avatarUrl!),
           ),
           onPressed: onDrawerTap,
         ),

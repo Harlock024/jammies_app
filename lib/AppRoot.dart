@@ -18,7 +18,7 @@ class AppRoot extends StatelessWidget {
       return GreetingScreen(
         onContinue: () async {
           final prefs = await SharedPreferences.getInstance();
-          await prefs.setBool('isFirstTime', true);
+          await prefs.setBool('isFirstTime', false);
           Navigator.pushReplacementNamed(context, '/login');
         },
       );
