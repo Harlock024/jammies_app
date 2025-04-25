@@ -54,7 +54,12 @@ class TrackCard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.play_arrow, size: 32),
+            IconButton(
+              icon: Icon(Icons.play_arrow, size: 32),
+              onPressed: () {
+                // Implement play functionality here
+              },
+            ),
           ],
         ),
       ),
