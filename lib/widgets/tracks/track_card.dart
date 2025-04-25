@@ -17,8 +17,10 @@ class TrackCard extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          // Usamos Row para la imagen y el contenido de forma horizontal
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Imagen de la portada del track
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
@@ -28,18 +30,23 @@ class TrackCard extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBox(width: 16),
+
+            SizedBox(width: 16), // Separación entre imagen y texto
             Expanded(
+              // Hace que el texto ocupe el resto del espacio disponible
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Título del track
                   Text(
                     track.title,
                     style: Theme.of(context).textTheme.bodyMedium,
-                    overflow: TextOverflow.ellipsis,
+                    overflow:
+                        TextOverflow.ellipsis, // Evita que se desborde el texto
                   ),
                   SizedBox(height: 4),
 
+                  // Artista del track
                   Text(
                     track.artist,
                     style: Theme.of(context).textTheme.bodySmall,
@@ -47,6 +54,7 @@ class TrackCard extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
 
+                  // Duración del track
                   Text(
                     _formatDuration(track.duration),
                     style: Theme.of(context).textTheme.bodySmall,
