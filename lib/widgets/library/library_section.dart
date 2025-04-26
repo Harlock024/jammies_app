@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jammies_app/widgets/tracks/tracks_list.dart';
-import 'package:jammies_app/widgets/album/album_card.dart';
-import 'package:jammies_app/widgets/playlists/playlist_list.dart';
-import 'package:jammies_app/models/library_type.dart'; // donde está el enum LibraryType
+import 'package:jammies_app/models/library_type.dart';
 
 class LibrarySection extends StatelessWidget {
   final LibraryType type;

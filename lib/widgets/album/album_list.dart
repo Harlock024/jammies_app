@@ -7,15 +7,28 @@ class AlbumGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 2,
-      padding: const EdgeInsets.all(8),
-      crossAxisSpacing: 8,
-      mainAxisSpacing: 8,
-      childAspectRatio: 0.85,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      children: mockAlbums.map((album) => AlbumCard(album: album)).toList(),
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.80,
+                ),
+                itemCount: mockAlbums.length,
+                itemBuilder: (context, index) {
+                  return AlbumCard(album: mockAlbums[index]);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -59,6 +59,16 @@ class _SearchScreenState extends State<SearchScreen> {
             hintText: 'Buscar canciones, álbumes...',
             border: InputBorder.none,
             hintStyle: TextStyle(color: Colors.grey[400]),
+            suffixIcon:
+                _query.isNotEmpty
+                    ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _controller.clear();
+                        setState(() => _query = '');
+                      },
+                    )
+                    : null,
           ),
           style: const TextStyle(fontSize: 18),
         ),
