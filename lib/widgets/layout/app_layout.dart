@@ -89,17 +89,6 @@ class AppLayout extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: MiniPlayer(
-              track: Track(
-                id: '1',
-                title: 'Test Track',
-                artist: 'Test Artist',
-                album: 'Test Album',
-                duration: '3:20',
-                coverUrl:
-                    'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-                audioUrl:
-                    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-              ),
               onTap: () {
                 openFullPlayer(context);
               },
@@ -117,19 +106,6 @@ void openFullPlayer(BuildContext context) {
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder:
-        (_) => PlayerScreen(
-          track: Track(
-            id: '1',
-            title: 'Test Track',
-            artist: 'Test Artist',
-            album: 'Test Album',
-            duration: '3:20',
-            coverUrl:
-                'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-            audioUrl:
-                'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-          ),
-        ),
+    builder: (_) => PlayerScreen(),
   );
 }
