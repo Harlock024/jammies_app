@@ -5,7 +5,7 @@ final List<Playlist> mockPlaylists = [
   Playlist(
     id: '1',
     name: 'My Playlist',
-    author: mockUsers[0],
+    createdBy: mockUsers[0],
     userId: mockUsers[0].id,
     description: 'My favorite songs',
     coverUrl:
@@ -15,7 +15,7 @@ final List<Playlist> mockPlaylists = [
   Playlist(
     id: '2',
     name: 'My Playlist',
-    author: mockUsers[1],
+    createdBy: mockUsers[1],
     userId: mockUsers[1].id,
     description: 'My favorite songs',
     coverUrl:
@@ -25,7 +25,7 @@ final List<Playlist> mockPlaylists = [
   Playlist(
     id: '3',
     name: 'My Playlist',
-    author: mockUsers[2],
+    createdBy: mockUsers[2],
     userId: mockUsers[2].id,
     description: 'My favorite songs',
     coverUrl:

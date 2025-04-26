@@ -4,7 +4,7 @@ class Playlist {
   String id;
   String name;
   String userId;
-  User author;
+  User createdBy;
   String? description;
   String? coverUrl;
   int trackCount;
@@ -12,7 +12,7 @@ class Playlist {
   Playlist({
     required this.id,
     required this.name,
-    required this.author,
+    required this.createdBy,
     required this.userId,
     required this.trackCount,
     this.description,

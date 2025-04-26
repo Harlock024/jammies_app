@@ -13,16 +13,18 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Perfil'), centerTitle: true),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ProfileBanner(user: user),
-            const SizedBox(height: 16.0),
-            ProfileActions(user: user),
-            ProfileContentTabs(),
-          ],
-        ),
+      body: CustomScrollView(
+        slivers: [
+          SliverList(
+            delegate: SliverChildListDelegate([
+              ProfileBanner(user: user),
+              const SizedBox(height: 16.0),
+              ProfileActions(user: user),
+              const SizedBox(height: 16.0),
+              ProfileContentTabs(),
+            ]),
+          ),
+        ],
       ),
     );
   }
