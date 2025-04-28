@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jammies_app/models/track.dart';
 import 'package:jammies_app/models/user.dart';
 import 'package:jammies_app/widgets/player/full_player.dart';
 import 'package:jammies_app/widgets/player/mini_player.dart';
@@ -7,6 +6,7 @@ import 'package:jammies_app/widgets/player/mini_player.dart';
 class AppLayout extends StatelessWidget {
   final Widget child;
   final VoidCallback onDrawerTap;
+  final VoidCallback onProfileTap;
   final GlobalKey<ScaffoldState> scaffoldKey;
   final Widget? bottomNavigationBar;
   final User user;
@@ -14,6 +14,7 @@ class AppLayout extends StatelessWidget {
     super.key,
     required this.child,
     required this.onDrawerTap,
+    required this.onProfileTap,
     required this.scaffoldKey,
     this.bottomNavigationBar,
     required this.user,
@@ -31,9 +32,7 @@ class AppLayout extends StatelessWidget {
             DrawerHeader(
               decoration: BoxDecoration(color: Color(0xFF292929)),
               child: InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, '/my-profile');
-                },
+                onTap: onProfileTap,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [

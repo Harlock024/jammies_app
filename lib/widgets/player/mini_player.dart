@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jammies_app/models/track.dart';
 import 'package:jammies_app/providers/audio_player.dart';
 import 'package:provider/provider.dart';
 
