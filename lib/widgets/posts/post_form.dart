@@ -17,11 +17,10 @@ class PostForm extends StatefulWidget {
 class _PostFormState extends State<PostForm> {
   final _controller = TextEditingController();
   Track? _selectedTrack;
-  XFile? _selectedImage; // Imagen seleccionada por el usuario
+  XFile? _selectedImage;
 
   final ImagePicker _picker = ImagePicker();
 
-  // Función para seleccionar imagen desde la galería o cámara
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     setState(() {
@@ -29,7 +28,6 @@ class _PostFormState extends State<PostForm> {
     });
   }
 
-  // Función para seleccionar una canción
   void _openTrackSearchDialog() async {
     final track = await showDialog<Track>(
       context: context,
@@ -41,15 +39,11 @@ class _PostFormState extends State<PostForm> {
     }
   }
 
-  // Función para enviar el post
   void _submitPost() {
     final content = _controller.text.trim();
 
     if (content.isEmpty && _selectedTrack == null && _selectedImage == null)
       return;
-
-    // Aquí crearías el post usando tu modelo:
-    // Post(id: ..., content: ..., track: _selectedTrack, imageUrl: _selectedImage, etc...)
 
     Navigator.pop(context);
   }
@@ -95,7 +89,6 @@ class _PostFormState extends State<PostForm> {
               ),
             const SizedBox(height: 12),
 
-            // Agregar opción para seleccionar una imagen
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton.icon(
