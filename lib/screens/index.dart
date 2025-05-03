@@ -6,6 +6,7 @@ import 'package:jammies_app/screens/library.dart';
 import 'package:jammies_app/screens/profile.dart';
 
 import 'package:jammies_app/screens/search.dart';
+import 'package:jammies_app/screens/upload.dart';
 import 'package:jammies_app/widgets/layout/app_layout.dart';
 
 class IndexPage extends StatefulWidget {
@@ -28,7 +29,12 @@ class _IndexPageState extends State<IndexPage> {
         "https://res.cloudinary.com/drdefvojb/image/upload/v1724779733/proyects_uv/k3o6eoted3lma2uzgbme.png",
   );
 
-  final List<Widget> pages = [HomeScreen(), SearchScreen(), LibraryScreen()];
+  final List<Widget> pages = [
+    HomeScreen(),
+    SearchScreen(),
+    UploadScreen(),
+    LibraryScreen(),
+  ];
 
   void openProfile() {
     setState(() {
@@ -51,19 +57,21 @@ class _IndexPageState extends State<IndexPage> {
       scaffoldKey: _scaffoldKey,
       onDrawerTap: () => _scaffoldKey.currentState?.openDrawer(),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: currentIndex,
         onTap: goToTab,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: "Buscar"),
+          BottomNavigationBarItem(icon: Icon(Icons.upload), label: "Upload"),
           BottomNavigationBarItem(
             icon: Icon(Icons.library_music),
             label: "Biblioteca",
           ),
         ],
       ),
-      child: showProfile ? ProfileScreen(user: user) : pages[currentIndex],
       onProfileTap: openProfile,
+      child: showProfile ? ProfileScreen(user: user) : pages[currentIndex],
     );
   }
 }

@@ -38,7 +38,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       builder: (context, child) {
-        // Aquí puedes poner el MiniPlayer si quieres que esté global
         return child!;
       },
       routes: {

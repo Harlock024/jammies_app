@@ -50,12 +50,10 @@ class PostCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            /// BODY: Text Content
             Text(post.content, style: const TextStyle(fontSize: 15)),
 
             const SizedBox(height: 12),
 
-            /// IMAGE (optional)
             if (post.imageUrl != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
