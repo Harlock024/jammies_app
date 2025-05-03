@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/mocks/mock_post.dart';
 import 'package:jammies_app/widgets/posts/post_card.dart';
+import 'package:jammies_app/widgets/posts/post_skeleton_card.dart';
 
 class PostList extends StatelessWidget {
   const PostList({super.key});
@@ -14,9 +15,14 @@ class PostList extends StatelessWidget {
         itemCount: mockPosts.length,
         itemBuilder: (context, index) {
           final post = mockPosts[index];
+          // null is not null for now, but we should handle null cases properly
+          final bool isValid =
+              post != null &&
+              post.title != null &&
+              post.author.avatarUrl != null;
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: PostCard(post: post),
+            child: isValid ? PostCard(post: post) : const PostCardSkeleton(),
           );
         },
       ),
