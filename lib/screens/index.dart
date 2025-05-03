@@ -7,7 +7,6 @@ import 'package:jammies_app/screens/profile.dart';
 
 import 'package:jammies_app/screens/search.dart';
 import 'package:jammies_app/widgets/layout/app_layout.dart';
-import 'package:jammies_app/widgets/navigation/tabs_button.dart';
 
 class IndexPage extends StatefulWidget {
   const IndexPage({super.key});

@@ -17,7 +17,6 @@ class PostCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// HEADER: Avatar + Name + Timestamp
             Row(
               children: [
                 ClipRRect(
