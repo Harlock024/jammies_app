@@ -1,0 +1,1 @@
+enum LibraryType { created, saved }

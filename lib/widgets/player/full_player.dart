@@ -1,63 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:jammies_app/models/track.dart';
+
+import 'package:jammies_app/providers/audio_player.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 
 class PlayerScreen extends StatefulWidget {
-  final Track track;
-
-  const PlayerScreen({super.key, required this.track});
+  const PlayerScreen({super.key});
 
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
-  late AudioPlayer _audioPlayer;
   Duration _currentPosition = Duration.zero;
   Duration _totalDuration = Duration.zero;
   bool _isLoading = true;
 
+  late final AudioController audioController;
+
   @override
   void initState() {
     super.initState();
-    _audioPlayer = AudioPlayer();
-    _initAudioPlayer();
-  }
+    audioController = context.read<AudioController>();
 
-  Future<void> _initAudioPlayer() async {
-    try {
-      await _audioPlayer.setUrl(widget.track.audioUrl);
+    // Escuchar duración
+    audioController.player.durationStream.listen((duration) {
+      if (duration != null) {
+        setState(() => _totalDuration = duration);
+      }
+    });
 
-      _audioPlayer.durationStream.listen((duration) {
-        if (duration != null) {
-          setState(() {
-            _totalDuration = duration;
-            _isLoading = false;
-          });
-        }
-      });
+    // Escuchar posición actual
+    audioController.player.positionStream.listen((position) {
+      setState(() => _currentPosition = position);
+    });
 
-      _audioPlayer.positionStream.listen((position) {
-        setState(() {
-          _currentPosition = position;
-        });
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error al cargar el audio: $e')));
-    }
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
+    // Escuchar estado de carga
+    audioController.player.processingStateStream.listen((state) {
+      setState(
+        () =>
+            _isLoading =
+                state == ProcessingState.loading ||
+                state == ProcessingState.buffering,
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final audioController = context.watch<AudioController>();
+    final track = audioController.currentTrack;
+
+    if (track == null) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Text(
+            "No track selected",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    }
+
     double sliderValue =
         _totalDuration.inMilliseconds == 0
             ? 0
@@ -68,6 +73,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            // Top bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Row(
@@ -93,12 +99,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
               ),
             ),
 
-            // Portada del álbum
+            // Portada
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.network(
-                  widget.track.coverUrl,
+                  track.coverUrl,
                   width: 320,
                   height: 320,
                   fit: BoxFit.cover,
@@ -136,13 +142,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 ),
               ),
             ),
+
             const SizedBox(height: 30),
 
-            // Información de la canción
+            // Info canción
             Column(
               children: [
                 Text(
-                  widget.track.title,
+                  track.title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
@@ -152,7 +159,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  widget.track.artist.toUpperCase(),
+                  track.artist.toUpperCase(),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white70,
@@ -162,9 +169,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 ),
               ],
             ),
+
             const SizedBox(height: 16),
 
-            // Barra de progreso
+            // Slider + duración
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
@@ -176,7 +184,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                             ? null
                             : (value) {
                               final newPosition = _totalDuration * value;
-                              _audioPlayer.seek(newPosition);
+                              audioController.seek(newPosition);
                             },
                     activeColor: const Color(0xFF86CECB),
                     inactiveColor: Colors.white24,
@@ -197,9 +205,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 ],
               ),
             ),
+
             const SizedBox(height: 30),
 
-            // Controles de reproducción
+            // Controles
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
@@ -212,7 +221,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     onPressed:
                         _isLoading
                             ? null
-                            : () => _audioPlayer.seek(Duration.zero),
+                            : () => audioController.seek(Duration.zero),
                   ),
                   IconButton(
                     iconSize: 64,
@@ -222,7 +231,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                               color: Color(0xFF86CECB),
                             )
                             : Icon(
-                              _audioPlayer.playing
+                              audioController.isPlaying
                                   ? Icons.pause_circle
                                   : Icons.play_circle,
                               color: Colors.white,
@@ -231,9 +240,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         _isLoading
                             ? null
                             : () {
-                              _audioPlayer.playing
-                                  ? _audioPlayer.pause()
-                                  : _audioPlayer.play();
+                              audioController.isPlaying
+                                  ? audioController.pause()
+                                  : audioController.play();
                             },
                   ),
                   IconButton(
@@ -242,13 +251,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     onPressed:
                         _isLoading
                             ? null
-                            : () => _audioPlayer.seek(_totalDuration),
+                            : () => audioController.seek(_totalDuration),
                   ),
                   const Icon(Icons.repeat, color: Colors.white70, size: 28),
                 ],
               ),
             ),
 
+            // Devices
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
@@ -256,17 +266,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   padding: const EdgeInsets.only(bottom: 40),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: [
+                    children: const [
                       Icon(
                         Icons.speaker_sharp,
                         color: Colors.white70,
                         size: 28,
                       ),
-                      const Text(
+                      Text(
                         "Devices",
                         style: TextStyle(color: Colors.white70, fontSize: 12),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                     ],
                   ),
                 ),

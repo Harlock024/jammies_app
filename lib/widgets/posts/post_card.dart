@@ -17,16 +17,32 @@ class PostCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// HEADER: Avatar + Name + Timestamp
             Row(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(25),
                   child: Image.network(
-                    post.author.avatarUrl,
+                    post.author.avatarUrl ?? '',
                     width: 50,
                     height: 50,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 50,
+                        height: 50,
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.person, color: Colors.white),
+                      );
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        width: 50,
+                        height: 50,
+                        alignment: Alignment.center,
+                        child: const CircularProgressIndicator(strokeWidth: 2),
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -51,21 +67,41 @@ class PostCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            /// BODY: Text Content
             Text(post.content, style: const TextStyle(fontSize: 15)),
 
             const SizedBox(height: 12),
 
-            /// IMAGE (optional)
             if (post.imageUrl != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(post.imageUrl!, fit: BoxFit.cover),
+                child: Image.network(
+                  post.imageUrl!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 180,
+                      color: Colors.grey[300],
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.broken_image,
+                        size: 40,
+                        color: Colors.grey,
+                      ),
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 180,
+                      alignment: Alignment.center,
+                      child: const CircularProgressIndicator(),
+                    );
+                  },
+                ),
               ),
 
             const SizedBox(height: 12),
 
-            /// ACTIONS: Like, Comment, Share
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [

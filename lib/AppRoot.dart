@@ -23,7 +23,6 @@ class AppRoot extends StatelessWidget {
         },
       );
     }
-
     return auth.isAuthenticated ? IndexPage() : const LoginScreen();
   }
 }

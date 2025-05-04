@@ -1,3 +1,4 @@
+import 'package:jammies_app/models/track.dart';
 import 'package:jammies_app/models/user.dart';
 
 class Post {
@@ -6,6 +7,7 @@ class Post {
   String content;
   String userId;
   User author;
+  Track? track;
   final String timestamp;
   DateTime createdAt;
   bool isLikedByMe;
@@ -19,6 +21,7 @@ class Post {
     required this.content,
     required this.userId,
     required this.author,
+    required this.track,
     required this.timestamp,
     required this.createdAt,
     required this.isLikedByMe,
