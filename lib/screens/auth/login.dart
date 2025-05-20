@@ -11,9 +11,16 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: LoginForm(
-          onContinue: () {
-            context.read<AuthProvider>().login();
-            Navigator.pushReplacementNamed(context, '/index');
+          onContinue: (email, password) async {
+            final authProvider = context.read<AuthProvider>();
+            final succces = await authProvider.login(email, password);
+            if (succces) {
+              Navigator.pushReplacementNamed(context, '/index');
+            } else {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Login fallido')));
+            }
           },
         ),
       ),

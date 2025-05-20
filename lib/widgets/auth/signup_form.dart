@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:jammies_app/providers/auth_provider.dart';
 
 class SignUpForm extends StatefulWidget {
-  final VoidCallback onRegister;
+  final Function(String username, String email, String password) onRegister;
 
   const SignUpForm({super.key, required this.onRegister});
 
@@ -29,7 +30,7 @@ class _SignUpFormState extends State<SignUpForm> {
       return;
     }
 
-    widget.onRegister(); // Continúa con el registro
+    widget.onRegister(username, email, password);
   }
 
   @override
