@@ -23,6 +23,7 @@ class AppLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF292929),
       key: scaffoldKey,
       drawer: Drawer(
         backgroundColor: Color(0xFF292929),
@@ -86,19 +87,27 @@ class AppLayout extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.settings),
+              leading: Icon(Icons.settings, color: Colors.white),
               title: Text(
                 'Configuración',
                 style: TextStyle(color: Colors.white),
               ),
+              onTap: () {
+                Navigator.pushNamed(context, '/settings');
+              },
             ),
+
             ListTile(
               leading: Icon(Icons.logout),
               title: Text(
                 'Cerrar sesión',
-                style: TextStyle(color: Colors.white),
-              ),
+                style: TextStyle(color: Colors.white))
+                ,
+              onTap: () {
+                Navigator.pushNamed(context, '/login');
+              },
             ),
+
           ],
         ),
       ),
