@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/models/post.dart';
+import 'package:jammies_app/widgets/posts/post_detail_page.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;
@@ -8,7 +9,17 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+  return InkWell(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PostDetailPage(post: post),
+        ),
+      );
+    },
+    borderRadius: BorderRadius.circular(12), // Match the card's radius
+    child: Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -123,7 +134,8 @@ class PostCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    )
+  );
   }
 }
 
