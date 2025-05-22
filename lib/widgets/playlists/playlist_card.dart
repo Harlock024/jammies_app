@@ -22,7 +22,6 @@ class PlaylistCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Imagen de la portada de la playlist
           Image.network(
             playlist.coverUrl!,
             width: 120,
