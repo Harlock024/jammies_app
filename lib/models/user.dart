@@ -1,8 +1,8 @@
 class User {
   String id;
-  String email;
   String? username;
-  String name;
+  String email;
+  String? name;
   String? avatarUrl;
   String? bio;
 
@@ -18,11 +18,21 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      email: json['email'],
       name: json['name'],
+      email: json['email'],
       username: json['username'],
-      avatarUrl: json['avatarUrl'],
+      avatarUrl: json['avatar_url'],
       bio: json['bio'],
     );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'email': email,
+      'name': name,
+      'username': username,
+      'avatar_url': avatarUrl,
+      'bio': bio,
+    };
   }
 }

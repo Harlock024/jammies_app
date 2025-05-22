@@ -28,8 +28,7 @@ class AuthServices {
 
       await _storage.write(key: "accessToken", value: tokens.accessToken);
       await _storage.write(key: "refreshToken", value: tokens.refreshToken);
-      await _storage.write(key: "user_username", value: user.username);
-      await _storage.write(key: "user_avatar", value: user.avatarUrl);
+      await _storage.write(key: "user", value: jsonEncode(user.toJson()));
 
       return true;
     } else {

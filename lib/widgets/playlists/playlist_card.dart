@@ -41,9 +41,8 @@ class PlaylistCard extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 4),
-          // Nombre del creador de la playlist
           Text(
-            playlist.createdBy.name,
+            playlist.createdBy.name!,
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: Colors.grey),

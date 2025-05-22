@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jammies_app/providers/auth_provider.dart';
 
 class SignUpForm extends StatefulWidget {
   final Function(String username, String email, String password) onRegister;

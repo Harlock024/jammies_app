@@ -8,7 +8,7 @@ class UserServices {
   final _client = ApiClient();
 
   Future<User?> getProfile() async {
-    final response = await _client.get('/users/me');
+    final response = await _client.get('/user');
 
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body));

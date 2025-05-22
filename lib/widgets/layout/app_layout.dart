@@ -71,7 +71,10 @@ class AppLayout extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(user.name, style: TextStyle(color: Colors.white)),
+                        Text(
+                          user.username!,
+                          style: TextStyle(color: Colors.white),
+                        ),
                         Text(
                           "Ver Perfil",
                           style: TextStyle(color: Colors.grey),

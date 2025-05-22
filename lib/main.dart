@@ -3,6 +3,7 @@ import 'package:jammies_app/AppRoot.dart';
 import 'package:jammies_app/models/user.dart';
 import 'package:jammies_app/providers/audio_player.dart';
 import 'package:jammies_app/providers/auth_provider.dart';
+import 'package:jammies_app/providers/user_provider.dart';
 import 'package:jammies_app/screens/auth/login.dart';
 import 'package:jammies_app/screens/auth/register.dart';
 
@@ -21,6 +22,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AudioController()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: MyApp(isFirstTime: isFirstTime),
     ),
