@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/models/track.dart';
 import 'package:jammies_app/services/track_services.dart';
+import 'package:jammies_app/widgets/tracks/track_card.dart';
 
 class TrackList extends StatelessWidget {
   const TrackList({super.key});
@@ -30,16 +31,7 @@ class TrackList extends StatelessWidget {
             itemCount: tracks.length,
             itemBuilder: (context, index) {
               final track = tracks[index];
-              return ListTile(
-                leading: Image.network(
-                  track.coverUrl,
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                ),
-                title: Text(track.title),
-                subtitle: Text('${track.artist} • ${track.album}'),
-              );
+              return TrackCard(track: track);
             },
           );
         },

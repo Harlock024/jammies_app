@@ -4,10 +4,9 @@ import 'package:jammies_app/models/track.dart';
 import 'api_url.dart';
 
 Future<List<Track>> fetchTracks() async {
-  final url = Uri.parse('$ApiUrl/tracks');
+  final url = Uri.parse('$ApiUrl/track');
 
   final response = await http.get(url);
-
   if (response.statusCode == 200) {
     final List<dynamic> trackList = json.decode(response.body);
     final List<Track> tracks =
