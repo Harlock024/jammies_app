@@ -9,7 +9,7 @@ class PostDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(post.author.name)),
+      appBar: AppBar(title: Text(post.author.username!)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -17,8 +17,7 @@ class PostDetailPage extends StatelessWidget {
           children: [
             Text(post.content, style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 12),
-            if (post.imageUrl != null)
-              Image.network(post.imageUrl!),
+            if (post.imageUrl != null) Image.network(post.imageUrl!),
           ],
         ),
       ),
