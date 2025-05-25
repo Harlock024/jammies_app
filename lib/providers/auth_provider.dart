@@ -7,6 +7,13 @@ class AuthProvider extends ChangeNotifier {
   bool _isAuthenticated = false;
   bool get isAuthenticated => _isAuthenticated;
 
+  Future<void> checkLoginStatus() async {
+    final token = await _authServices.accessToken;
+
+    _isAuthenticated = token != null;
+    notifyListeners();
+  }
+
   Future<bool> login(String email, String password) async {
     try {
       final success = await _authServices.login(email, password);

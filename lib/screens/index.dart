@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jammies_app/models/user.dart';
@@ -8,7 +6,6 @@ import 'package:jammies_app/screens/greeting.dart';
 
 import 'package:jammies_app/screens/library.dart';
 import 'package:jammies_app/screens/profile.dart';
-
 
 import 'package:jammies_app/screens/search.dart';
 import 'package:jammies_app/screens/upload.dart';
@@ -42,7 +39,7 @@ class _IndexPageState extends State<IndexPage> {
     LibraryScreen(),
     // GreetingScreen(onContinue: onContinue),
   ];
-  
+
   // static get onContinue => null;
 
   void openProfile() {

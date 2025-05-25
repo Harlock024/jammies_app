@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jammies_app/models/user.dart';
 import 'package:jammies_app/widgets/player/full_player.dart';
 import 'package:jammies_app/widgets/player/mini_player.dart';
+import 'package:jammies_app/services/auth_services.dart';
 
 class AppLayout extends StatelessWidget {
   final Widget child;
@@ -101,13 +102,13 @@ class AppLayout extends StatelessWidget {
               leading: Icon(Icons.logout),
               title: Text(
                 'Cerrar sesión',
-                style: TextStyle(color: Colors.white))
-                ,
-              onTap: () {
+                style: TextStyle(color: Colors.white),
+              ),
+              onTap: () async {
+                await AuthServices().logout();
                 Navigator.pushNamed(context, '/login');
               },
             ),
-
           ],
         ),
       ),
