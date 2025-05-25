@@ -37,20 +37,20 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       
       title: 'Jammies App',
-      // theme: ThemeData(
-      //   primarySwatch: Colors.teal,
-      //   scaffoldBackgroundColor: const Color.fromARGB(255, 44, 44, 44),
-      //   appBarTheme: const AppBarTheme(
-      //     backgroundColor: Color.fromARGB(255, 44, 44, 44),
-      //     elevation: 0,
-      //     iconTheme: IconThemeData(color: Colors.white),
-      //     titleTextStyle: TextStyle(
-      //       color: Colors.white,
-      //       fontSize: 20,
-      //       fontWeight: FontWeight.w600,
-      //     ),
-      //   ),
-      // ),
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+        scaffoldBackgroundColor: const Color.fromARGB(255, 44, 44, 44),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color.fromARGB(255, 44, 44, 44),
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.white),
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
       
       debugShowCheckedModeBanner: false,
       initialRoute: '/greetings',
