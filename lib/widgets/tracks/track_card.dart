@@ -14,7 +14,7 @@ class TrackCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.read<AudioController>().setTrack(track);
+        context.read<AudioController>().selectTrack(track);
       },
       child: Card(
         margin: EdgeInsets.all(8),
@@ -58,6 +58,7 @@ class TrackCard extends StatelessWidget {
                   ],
                 ),
               ),
+              IconButton(icon: Icon(Icons.play_arrow), onPressed: onPlay),
             ],
           ),
         ),

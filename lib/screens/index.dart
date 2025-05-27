@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:jammies_app/models/user.dart';
+import 'package:jammies_app/providers/audio_player.dart';
 import 'package:jammies_app/screens/home.dart';
-import 'package:jammies_app/screens/greeting.dart';
-
 import 'package:jammies_app/screens/library.dart';
 import 'package:jammies_app/screens/profile.dart';
 
 import 'package:jammies_app/screens/search.dart';
 import 'package:jammies_app/screens/upload.dart';
+import 'package:jammies_app/services/ws_services.dart';
 import 'package:jammies_app/widgets/layout/app_layout.dart';
 import 'package:jammies_app/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -23,11 +21,33 @@ class IndexPage extends StatefulWidget {
 class _IndexPageState extends State<IndexPage> {
   int currentIndex = 0;
   bool showProfile = false;
+
   @override
   void initState() {
     super.initState();
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    userProvider.loadUserFromStorage();
+    Future.microtask(() async {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final wsServices = Provider.of<WsServices>(context, listen: false);
+      await userProvider.loadUserFromStorage();
+      final user = userProvider.user;
+      final audioController = Provider.of<AudioController>(
+        context,
+        listen: false,
+      );
+
+      if (user != null) {
+        wsServices.connect(user.id);
+
+        audioController.setWsServices(wsServices);
+
+        wsServices.onMessage = audioController.updateFromWs;
+
+        print('WS conectado con ${user.id}');
+        print(' AudioController conectado al WebSocket');
+      } else {
+        print('⚠️ No se pudo conectar, user es null');
+      }
+    });
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -37,10 +57,7 @@ class _IndexPageState extends State<IndexPage> {
     SearchScreen(),
     UploadScreen(),
     LibraryScreen(),
-    // GreetingScreen(onContinue: onContinue),
   ];
-
-  // static get onContinue => null;
 
   void openProfile() {
     setState(() {

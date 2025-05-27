@@ -19,6 +19,3 @@ Future<List<Track>> fetchTracks() async {
     throw Exception('Failed to load tracks');
   }
 }
-
-// streaming api request
-// TODO

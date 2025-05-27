@@ -42,7 +42,6 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
         duration: 3.20,
         coverUrl:
             'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-        audioUrl: '../music/Consume.mp3',
         album: "Test Album",
       ),
       Track(
@@ -52,7 +51,6 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
         duration: 4.20,
         coverUrl:
             'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-        audioUrl: '../music/Consume.mp3',
         album: "Test Album 2",
       ),
       Track(
@@ -62,7 +60,6 @@ class _PlaylistDetailsScreenState extends State<PlaylistDetailsScreen> {
         duration: 5.20,
         coverUrl:
             'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-        audioUrl: '../music/Consume.mp3',
         album: "Test Album 3",
       ),
     ];

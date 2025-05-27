@@ -4,7 +4,6 @@ import 'package:jammies_app/widgets/posts/post_card.dart';
 import 'package:jammies_app/widgets/posts/post_form.dart';
 
 class HomeScreen extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom + 110;

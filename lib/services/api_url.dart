@@ -1,2 +1,2 @@
 const ApiUrl = 'http://localhost:8080/api';
-const WsUrl = 'http://localhost:8081/ws';
+const WsUrl = 'ws://localhost:8081';

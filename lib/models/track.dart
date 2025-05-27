@@ -5,7 +5,6 @@ class Track {
   String album;
   double duration;
   String coverUrl;
-  String audioUrl;
 
   Track({
     required this.id,
@@ -14,7 +13,6 @@ class Track {
     required this.album,
     required this.duration,
     required this.coverUrl,
-    required this.audioUrl,
   });
 
   factory Track.fromJson(Map<String, dynamic> json) {
@@ -25,7 +23,6 @@ class Track {
       album: json['album'] ?? '',
       duration: json['duration'] ?? '',
       coverUrl: json['cover_url'] ?? '',
-      audioUrl: json['audio_url'] ?? '',
     );
   }
 
@@ -37,7 +34,6 @@ class Track {
       'album': album,
       'duration': duration,
       'cover_url': coverUrl,
-      'audio_url': audioUrl,
     };
   }
 }

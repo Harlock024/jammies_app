@@ -29,7 +29,7 @@ class _AlbumDetailsScreenState extends State<AlbumDetailsScreen> {
         duration: 3.20,
         coverUrl:
             'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-        audioUrl: '../music/Consume.mp3',
+
         album: album.title,
       ),
       Track(
@@ -39,7 +39,7 @@ class _AlbumDetailsScreenState extends State<AlbumDetailsScreen> {
         duration: 4.20,
         coverUrl:
             'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-        audioUrl: '../music/Consume.mp3',
+
         album: album.title,
       ),
       Track(
@@ -49,7 +49,6 @@ class _AlbumDetailsScreenState extends State<AlbumDetailsScreen> {
         duration: 5.20,
         coverUrl:
             'https://i.scdn.co/image/ab67616d0000b27393c50048dce0f88071728c8c',
-        audioUrl: '../music/Consume.mp3',
         album: album.title,
       ),
     ];

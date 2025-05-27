@@ -8,7 +8,6 @@ final List<Track> createdTracks = [
     album: 'Mi Álbum',
     duration: 3.45,
     coverUrl: 'https://via.placeholder.com/150',
-    audioUrl: '',
   ),
   Track(
     id: '2',
@@ -17,7 +16,6 @@ final List<Track> createdTracks = [
     album: 'Mi Álbum',
     duration: 2.30,
     coverUrl: 'https://via.placeholder.com/150',
-    audioUrl: '',
   ),
 ];
 
@@ -29,6 +27,5 @@ final List<Track> savedTracks = [
     album: 'Top Hits',
     duration: 4.00,
     coverUrl: 'https://via.placeholder.com/150',
-    audioUrl: '',
   ),
 ];
