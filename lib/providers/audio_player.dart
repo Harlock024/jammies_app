@@ -54,15 +54,21 @@ class AudioController extends ChangeNotifier {
   }
 
   void selectTrack(Track track) {
+    if (_currentTrack?.id == track.id) {
+      print('⚠️ La misma canción ya está seleccionada. No se hace nada.');
+      return;
+    }
+
     _currentTrack = track;
+    _audioUrl = null;
     notifyListeners();
-    print('Track selected: ${track.id}');
+
+    print('🎵 Nueva canción seleccionada: ${track.id}');
     _wsServices?.sendEvent(event: "playing", trackId: track.id, currentTime: 0);
   }
 
   Future<void> updateFromWs(Map<String, dynamic> data) async {
     print('updateFromWs called with data: $data');
-
     try {
       if (data['event'] != 'playing' &&
           data['event'] != 'paused' &&
@@ -74,7 +80,6 @@ class AudioController extends ChangeNotifier {
       final trackId = data['track_id'] as String;
       final audioUrl = data['audio_url'] as String?;
       final currentTime = (data['current_time'] as num).toDouble();
-
       print(
         ' Parsed data - TrackId: $trackId, AudioUrl: $audioUrl, CurrentTime: $currentTime',
       );
