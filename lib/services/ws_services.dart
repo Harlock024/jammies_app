@@ -11,7 +11,9 @@ class WsServices {
   void connect(String userId) {
     if (_connected) return;
 
-    final uri = Uri.parse('ws://localhost:8081/ws?room_id=$userId');
+    final uri = Uri.parse(
+      'https://jammies-streaming.onrender.com/ws?room_id=$userId',
+    );
     print('WS connecting to room $userId');
 
     _channel = WebSocketChannel.connect(uri);
