@@ -12,7 +12,7 @@ class WsServices {
     if (_connected) return;
 
     final uri = Uri.parse(
-      'https://jammies-streaming.onrender.com/ws?room_id=$userId',
+      'ws://jammies-streaming.onrender.com/ws?room_id=$userId',
     );
     print('WS connecting to room $userId');
 
