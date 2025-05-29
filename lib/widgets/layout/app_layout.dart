@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jammies_app/models/user.dart';
 import 'package:jammies_app/widgets/player/full_player.dart';
 import 'package:jammies_app/widgets/player/mini_player.dart';
+import 'package:jammies_app/services/auth_services.dart';
 
 class AppLayout extends StatelessWidget {
   final Widget child;
@@ -72,7 +73,10 @@ class AppLayout extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(user.name, style: TextStyle(color: Colors.white)),
+                        Text(
+                          user.username!,
+                          style: TextStyle(color: Colors.white),
+                        ),
                         Text(
                           "Ver Perfil",
                           style: TextStyle(color: Colors.grey),
@@ -98,13 +102,12 @@ class AppLayout extends StatelessWidget {
               leading: Icon(Icons.logout),
               title: Text(
                 'Cerrar sesión',
-                style: TextStyle(color: Colors.white))
-                ,
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () {
                 Navigator.pushNamed(context, '/login');
               },
             ),
-
           ],
         ),
       ),

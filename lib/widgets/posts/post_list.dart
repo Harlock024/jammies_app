@@ -15,7 +15,6 @@ class PostList extends StatelessWidget {
         itemCount: mockPosts.length,
         itemBuilder: (context, index) {
           final post = mockPosts[index];
-          // null is not null for now, but we should handle null cases properly
           final bool isValid =
               post != null &&
               post.title != null &&

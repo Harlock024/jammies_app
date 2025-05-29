@@ -73,7 +73,7 @@ class _PostsTab extends StatelessWidget {
 class _TracksTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return TracksList();
+    return TrackList();
   }
 }
 

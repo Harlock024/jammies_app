@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
 import 'package:jammies_app/providers/audio_player.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 
 class PlayerScreen extends StatefulWidget {
@@ -12,38 +10,9 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
-  Duration _currentPosition = Duration.zero;
-  Duration _totalDuration = Duration.zero;
-  bool _isLoading = true;
-
-  late final AudioController audioController;
-
   @override
   void initState() {
     super.initState();
-    audioController = context.read<AudioController>();
-
-    // Escuchar duración
-    audioController.player.durationStream.listen((duration) {
-      if (duration != null) {
-        setState(() => _totalDuration = duration);
-      }
-    });
-
-    // Escuchar posición actual
-    audioController.player.positionStream.listen((position) {
-      setState(() => _currentPosition = position);
-    });
-
-    // Escuchar estado de carga
-    audioController.player.processingStateStream.listen((state) {
-      setState(
-        () =>
-            _isLoading =
-                state == ProcessingState.loading ||
-                state == ProcessingState.buffering,
-      );
-    });
   }
 
   @override
@@ -63,10 +32,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
       );
     }
 
+    final totalMs = audioController.totalDuration.inMilliseconds;
+    final currentMs = audioController.currentPosition.inMilliseconds;
     double sliderValue =
-        _totalDuration.inMilliseconds == 0
-            ? 0
-            : _currentPosition.inMilliseconds / _totalDuration.inMilliseconds;
+        (totalMs == 0) ? 0 : (currentMs / totalMs).clamp(0.0, 1.0);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -99,7 +68,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
               ),
             ),
 
-            // Portada
+            // Cover image
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
@@ -145,7 +114,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
             const SizedBox(height: 30),
 
-            // Info canción
+            // Track info
             Column(
               children: [
                 Text(
@@ -172,7 +141,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
             const SizedBox(height: 16),
 
-            // Slider + duración
+            // Slider + durations
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
@@ -180,10 +149,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   Slider(
                     value: sliderValue,
                     onChanged:
-                        _isLoading
+                        audioController.currentlyLoading
                             ? null
                             : (value) {
-                              final newPosition = _totalDuration * value;
+                              final newPosition =
+                                  audioController.totalDuration * value;
                               audioController.seek(newPosition);
                             },
                     activeColor: const Color(0xFF86CECB),
@@ -193,11 +163,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        formatDuration(_currentPosition),
+                        formatDuration(audioController.currentPosition),
                         style: const TextStyle(color: Colors.white70),
                       ),
                       Text(
-                        formatDuration(_totalDuration),
+                        formatDuration(audioController.totalDuration),
                         style: const TextStyle(color: Colors.white70),
                       ),
                     ],
@@ -208,7 +178,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
             const SizedBox(height: 30),
 
-            // Controles
+            // Controls
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
@@ -219,14 +189,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     iconSize: 32,
                     icon: const Icon(Icons.skip_previous, color: Colors.white),
                     onPressed:
-                        _isLoading
+                        audioController.currentlyLoading
                             ? null
                             : () => audioController.seek(Duration.zero),
                   ),
                   IconButton(
                     iconSize: 64,
                     icon:
-                        _isLoading
+                        audioController.currentlyLoading
                             ? const CircularProgressIndicator(
                               color: Color(0xFF86CECB),
                             )
@@ -237,21 +207,25 @@ class _PlayerScreenState extends State<PlayerScreen> {
                               color: Colors.white,
                             ),
                     onPressed:
-                        _isLoading
+                        audioController.currentlyLoading
                             ? null
                             : () {
-                              audioController.isPlaying
-                                  ? audioController.pause()
-                                  : audioController.play();
+                              if (audioController.isPlaying) {
+                                audioController.pause();
+                              } else {
+                                audioController.play();
+                              }
                             },
                   ),
                   IconButton(
                     iconSize: 32,
                     icon: const Icon(Icons.skip_next, color: Colors.white),
                     onPressed:
-                        _isLoading
+                        audioController.currentlyLoading
                             ? null
-                            : () => audioController.seek(_totalDuration),
+                            : () => audioController.seek(
+                              audioController.totalDuration,
+                            ),
                   ),
                   const Icon(Icons.repeat, color: Colors.white70, size: 28),
                 ],

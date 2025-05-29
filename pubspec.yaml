@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  just_audio: ^0.9.36
+  just_audio: ^0.10.3
   shared_preferences: ^2.2.2
   provider: ^6.1.1
   image_picker: ^0.8.6
@@ -38,6 +38,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   file_picker: ^10.1.2
+  http: ^1.4.0
+  flutter_secure_storage: ^9.2.4
+  web_socket_channel: ^3.0.3
+  audioplayers: ^6.4.0
 
 dev_dependencies:
   flutter_test:

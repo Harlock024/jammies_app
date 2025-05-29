@@ -14,7 +14,7 @@ class TrackCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.read<AudioController>().setTrack(track);
+        context.read<AudioController>().selectTrack(track);
       },
       child: Card(
         margin: EdgeInsets.all(8),
@@ -58,6 +58,7 @@ class TrackCard extends StatelessWidget {
                   ],
                 ),
               ),
+              IconButton(icon: Icon(Icons.play_arrow), onPressed: onPlay),
             ],
           ),
         ),
@@ -65,9 +66,9 @@ class TrackCard extends StatelessWidget {
     );
   }
 
-  String _formatDuration(String duration) {
-    final int minutes = int.parse(duration.split(':')[0]);
-    final int seconds = int.parse(duration.split(':')[1]);
+  String _formatDuration(double duration) {
+    final int minutes = duration ~/ 60;
+    final int seconds = duration.toInt().remainder(60);
     return '$minutes min ${seconds.toString().padLeft(2, '0')} sec';
   }
 }

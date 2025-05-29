@@ -19,7 +19,7 @@ class ProfileBanner extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          user.name,
+          user.username!,
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         Text(user.email, style: TextStyle(color: Colors.grey[600])),

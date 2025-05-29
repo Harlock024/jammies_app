@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:jammies_app/models/user.dart';
+import 'package:jammies_app/providers/audio_player.dart';
 import 'package:jammies_app/screens/home.dart';
 import 'package:jammies_app/screens/greeting.dart';
 
 import 'package:jammies_app/screens/library.dart';
 import 'package:jammies_app/screens/profile.dart';
 
-
 import 'package:jammies_app/screens/search.dart';
 import 'package:jammies_app/screens/upload.dart';
+import 'package:jammies_app/services/ws_services.dart';
 import 'package:jammies_app/widgets/layout/app_layout.dart';
+import 'package:jammies_app/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class IndexPage extends StatefulWidget {
   const IndexPage({super.key});
@@ -21,15 +23,36 @@ class IndexPage extends StatefulWidget {
 class _IndexPageState extends State<IndexPage> {
   int currentIndex = 0;
   bool showProfile = false;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final user = User(
-    id: "1",
-    name: 'Harlock024',
-    email: 'harlock024@gmail.com',
-    avatarUrl:
-        "https://res.cloudinary.com/drdefvojb/image/upload/v1724779733/proyects_uv/k3o6eoted3lma2uzgbme.png",
-  );
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final wsServices = Provider.of<WsServices>(context, listen: false);
+      await userProvider.loadUserFromStorage();
+      final user = userProvider.user;
+      final audioController = Provider.of<AudioController>(
+        context,
+        listen: false,
+      );
+
+      if (user != null) {
+        wsServices.connect(user.id);
+
+        audioController.setWsServices(wsServices);
+
+        wsServices.onMessage = audioController.updateFromWs;
+
+        print('WS conectado con ${user.id}');
+        print(' AudioController conectado al WebSocket');
+      } else {
+        print('⚠️ No se pudo conectar, user es null');
+      }
+    });
+  }
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final List<Widget> pages = [
     HomeScreen(),
@@ -38,7 +61,7 @@ class _IndexPageState extends State<IndexPage> {
     LibraryScreen(),
     // GreetingScreen(onContinue: onContinue),
   ];
-  
+
   // static get onContinue => null;
 
   void openProfile() {
@@ -57,26 +80,44 @@ class _IndexPageState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AppLayout(
-      user: user,
-      scaffoldKey: _scaffoldKey,
-      onDrawerTap: () => _scaffoldKey.currentState?.openDrawer(),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: currentIndex,
-        onTap: goToTab,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Buscar"),
-          BottomNavigationBarItem(icon: Icon(Icons.upload), label: "Upload"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_music),
-            label: "Biblioteca",
+    return Consumer<UserProvider>(
+      builder: (context, userProvider, child) {
+        final user = userProvider.user;
+
+        if (user == null) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        return AppLayout(
+          user: user,
+          scaffoldKey: _scaffoldKey,
+          onDrawerTap: () => _scaffoldKey.currentState?.openDrawer(),
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: currentIndex,
+            onTap: goToTab,
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.search),
+                label: "Buscar",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.upload),
+                label: "Upload",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.library_music),
+                label: "Biblioteca",
+              ),
+            ],
           ),
-        ],
-      ),
-      onProfileTap: openProfile,
-      child: showProfile ? ProfileScreen(user: user) : pages[currentIndex],
+          onProfileTap: openProfile,
+          child: showProfile ? ProfileScreen(user: user) : pages[currentIndex],
+        );
+      },
     );
   }
 }

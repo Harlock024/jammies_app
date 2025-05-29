@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LoginForm extends StatefulWidget {
-  final VoidCallback onContinue;
+  // final VoidCallback onContinue;
+  final Function(String email, String password) onContinue;
 
   const LoginForm({super.key, required this.onContinue});
 
@@ -10,21 +11,9 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  void handleSubmit() {
-    if (_formKey.currentState!.validate()) {
-      final email = _emailController.text;
-      final password = _passwordController.text;
-
-      print("Email: $email");
-      print("Password: $password");
-
-      widget.onContinue();
-    }
-  }
+  // final _formKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +24,6 @@ class _LoginFormState extends State<LoginForm> {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 400),
           child: Form(
-            key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,7 +40,7 @@ class _LoginFormState extends State<LoginForm> {
                 const Text("Email", style: TextStyle(color: Colors.white)),
                 const SizedBox(height: 8),
                 TextFormField(
-                  controller: _emailController,
+                  controller: emailController,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     filled: true,
@@ -75,7 +63,7 @@ class _LoginFormState extends State<LoginForm> {
                 const Text("Password", style: TextStyle(color: Colors.white)),
                 const SizedBox(height: 8),
                 TextFormField(
-                  controller: _passwordController,
+                  controller: passwordController,
                   obscureText: true,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
@@ -100,7 +88,11 @@ class _LoginFormState extends State<LoginForm> {
                   width: double.infinity,
                   height: 48,
                   child: ElevatedButton(
-                    onPressed: handleSubmit,
+                    onPressed: () {
+                      final email = emailController.text;
+                      final password = passwordController.text;
+                      widget.onContinue(email, password);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF90E0E8),
                       foregroundColor: Colors.black,
@@ -111,6 +103,7 @@ class _LoginFormState extends State<LoginForm> {
                     child: const Text("Sign In"),
                   ),
                 ),
+
                 const SizedBox(height: 16),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,

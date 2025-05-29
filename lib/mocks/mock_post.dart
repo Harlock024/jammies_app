@@ -9,6 +9,7 @@ final List<Post> mockPosts = [
     author: User(
       id: '1',
       name: 'John Doe',
+      username: '@john_doe',
       avatarUrl:
           'https://res.cloudinary.com/drdefvojb/image/upload/v1724779733/proyects_uv/k3o6eoted3lma2uzgbme.png',
       email: 'john.doe@example.com',
@@ -31,6 +32,7 @@ final List<Post> mockPosts = [
     author: User(
       id: '2',
       name: 'Jane Doe',
+      username: '@jane_doe',
       avatarUrl:
           'https://res.cloudinary.com/drdefvojb/image/upload/v1724779733/proyects_uv/k3o6eoted3lma2uzgbme.png',
       email: 'jane.doe@example.com',
@@ -53,6 +55,7 @@ final List<Post> mockPosts = [
     author: User(
       id: '3',
       name: 'John Doe',
+      username: '@john_doe',
       avatarUrl:
           'https://us-tuna-sounds-images.voicemod.net/1ff44856-704e-432b-a040-407b6128b10c-1677808295273.png',
       email: 'john.doe@example.com',
@@ -63,7 +66,6 @@ final List<Post> mockPosts = [
     commentsCount: 0,
     likesCount: 0,
     imageUrl: null,
-
     isLikedByMe: false,
     track: null,
   ),

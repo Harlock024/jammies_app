@@ -1,26 +1,26 @@
-class User {
-  String id;
-  String? username;
-  String email;
-  String? name;
-  String? avatarUrl;
-  String? bio;
+class UserResponse {
+  final String id;
+  final String? name; // <- aceptar null
+  final String username;
+  final String email;
+  final String? avatarUrl;
+  final String? bio;
 
-  User({
+  UserResponse({
     required this.id,
+    this.name,
+    required this.username,
     required this.email,
-    required this.name,
-    this.username,
     this.avatarUrl,
     this.bio,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+  factory UserResponse.fromJson(Map<String, dynamic> json) {
+    return UserResponse(
       id: json['id'],
       name: json['name'],
-      email: json['email'],
       username: json['username'],
+      email: json['email'],
       avatarUrl: json['avatar_url'],
       bio: json['bio'],
     );
