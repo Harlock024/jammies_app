@@ -6,6 +6,9 @@ import 'package:jammies_app/widgets/album/album_card.dart';
 import 'package:jammies_app/widgets/playlists/playlist_card.dart';
 import 'package:jammies_app/widgets/tracks/track_card.dart';
 
+import 'package:jammies_app/models/track.dart';
+import 'package:jammies_app/services/track_services.dart';
+
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -49,7 +52,7 @@ class _SearchScreenState extends State<SearchScreen>
                 .toList()
             : mockAlbums;
 
-    final users = <dynamic>[]; // Replace with real user data if needed
+    final users = <dynamic>[];
 
     return DefaultTabController(
       length: 4,
@@ -87,11 +90,35 @@ class _SearchScreenState extends State<SearchScreen>
         ),
         body: TabBarView(
           children: [
-            /// Tracks Tab
-            ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: tracks.length,
-              itemBuilder: (context, index) => TrackCard(track: tracks[index]),
+            /// Tracks Tab (using FutureBuilder)
+            FutureBuilder<List<Track>>(
+              future: fetchTracks(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                final tracks = snapshot.data ?? [];
+
+                if (tracks.isEmpty) {
+                  return const Center(
+                    child: Text('No hay canciones disponibles'),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: tracks.length,
+                  itemBuilder: (context, index) {
+                    final track = tracks[index];
+                    return TrackCard(track: track);
+                  },
+                );
+              },
             ),
 
             /// Playlists Tab
