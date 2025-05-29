@@ -19,3 +19,17 @@ Future<List<Track>> fetchTracks() async {
     throw Exception('Failed to load tracks');
   }
 }
+
+Future<Track> fetchTrackById(String id) async {
+  final url = Uri.parse('$ApiUrl/track/$id');
+
+  final response = await http.get(url);
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> trackJson = json.decode(response.body);
+    final Track track = Track.fromJson(trackJson);
+
+    return track;
+  } else {
+    throw Exception('Failed to load track');
+  }
+}

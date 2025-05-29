@@ -29,7 +29,6 @@ class _SearchScreenState extends State<SearchScreen> {
                 )
                 .toList()
             : mockTracks;
-
     final playlists =
         isSearching
             ? mockPlaylists

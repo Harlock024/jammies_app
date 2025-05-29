@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:jammies_app/services/api_url.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -11,9 +12,8 @@ class WsServices {
   void connect(String userId) {
     if (_connected) return;
 
-    final uri = Uri.parse(
-      'ws://jammies-streaming.onrender.com/ws?room_id=$userId',
-    );
+    final uri = Uri.parse('$WsUrl/ws?room_id=$userId');
+    print('uri connected $uri');
     print('WS connecting to room $userId');
 
     _channel = WebSocketChannel.connect(uri);

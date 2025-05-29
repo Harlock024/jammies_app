@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/models/track.dart';
+import 'package:jammies_app/services/track_services.dart';
 import 'package:jammies_app/services/ws_services.dart';
 import 'package:audioplayers/audioplayers.dart';
 
@@ -84,14 +85,6 @@ class AudioController extends ChangeNotifier {
         ' Parsed data - TrackId: $trackId, AudioUrl: $audioUrl, CurrentTime: $currentTime',
       );
 
-      // Si no hay track actual o es diferente al recibido
-      if (_currentTrack == null || _currentTrack!.id != trackId) {
-        print(
-          '❌ Track ID no coincide o es null. Current: ${_currentTrack?.id}, Received: $trackId',
-        );
-        return;
-      }
-
       print(
         ' Track ID matches. Processing WS event: ${data['event']} for track: $trackId',
       );
@@ -99,10 +92,13 @@ class AudioController extends ChangeNotifier {
       // Si hay una nueva URL de audio, cargarla
       if (audioUrl != null && audioUrl != _audioUrl) {
         print(' Loading new audio URL: $audioUrl');
-        print(' Player state before loading: ${_player.state}');
-
         isLoading.value = true;
         _audioUrl = audioUrl;
+
+        if (currentTrack!.id != trackId) {
+          selectTrack(await fetchTrackById(trackId));
+          print(' Track selected in update from ws');
+        }
 
         try {
           print(' Calling _player.setSourceUrl...');
