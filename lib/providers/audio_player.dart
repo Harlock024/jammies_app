@@ -64,7 +64,7 @@ class AudioController extends ChangeNotifier {
     _audioUrl = null;
     notifyListeners();
 
-    print('🎵 Nueva canción seleccionada: ${track.id}');
+    print('new track selected: ${track.id}');
     _wsServices?.sendEvent(event: "playing", trackId: track.id, currentTime: 0);
   }
 
