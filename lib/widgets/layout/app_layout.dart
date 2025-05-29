@@ -104,8 +104,7 @@ class AppLayout extends StatelessWidget {
                 'Cerrar sesión',
                 style: TextStyle(color: Colors.white),
               ),
-              onTap: () async {
-                await AuthServices().logout();
+              onTap: () {
                 Navigator.pushNamed(context, '/login');
               },
             ),

@@ -13,7 +13,8 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends State<SearchScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   String _query = '';
 
@@ -29,6 +30,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 )
                 .toList()
             : mockTracks;
+
     final playlists =
         isSearching
             ? mockPlaylists
@@ -47,92 +49,88 @@ class _SearchScreenState extends State<SearchScreen> {
                 .toList()
             : mockAlbums;
 
-    final users = <dynamic>[];
+    final users = <dynamic>[]; // Replace with real user data if needed
 
-    return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _controller,
-          onChanged: (val) => setState(() => _query = val.trim()),
-          decoration: InputDecoration(
-            hintText: 'Buscar canciones, álbumes...',
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.grey[400]),
-            suffixIcon:
-                _query.isNotEmpty
-                    ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _controller.clear();
-                        setState(() => _query = '');
-                      },
-                    )
-                    : null,
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+        appBar: AppBar(
+          title: TextField(
+            controller: _controller,
+            onChanged: (val) => setState(() => _query = val.trim()),
+            decoration: InputDecoration(
+              hintText: 'Buscar canciones, álbumes...',
+              border: InputBorder.none,
+              hintStyle: TextStyle(color: Colors.grey[400]),
+              suffixIcon:
+                  _query.isNotEmpty
+                      ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _controller.clear();
+                          setState(() => _query = '');
+                        },
+                      )
+                      : null,
+            ),
+            style: const TextStyle(fontSize: 18),
           ),
-          style: const TextStyle(fontSize: 18),
+          bottom: const TabBar(
+            isScrollable: true,
+            tabs: [
+              Tab(text: 'Tracks'),
+              Tab(text: 'Playlists'),
+              Tab(text: 'Álbumes'),
+              Tab(text: 'Usuarios'),
+            ],
+          ),
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        body: TabBarView(
           children: [
-            if (!isSearching)
-              Text('Populares', style: Theme.of(context).textTheme.titleLarge),
+            /// Tracks Tab
+            ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: tracks.length,
+              itemBuilder: (context, index) => TrackCard(track: tracks[index]),
+            ),
 
-            if (tracks.isNotEmpty) ...[
-              const SizedBox(height: 24),
-              Text('Tracks', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              ...mockTracks.map((t) => TrackCard(track: t)),
-            ],
+            /// Playlists Tab
+            GridView.count(
+              crossAxisCount: 2,
+              padding: const EdgeInsets.all(16),
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childAspectRatio: 1,
+              children:
+                  playlists.map((p) => PlaylistCard(playlist: p)).toList(),
+            ),
 
-            if (playlists.isNotEmpty) ...[
-              const SizedBox(height: 24),
-              Text('Playlists', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 1,
-                children:
-                    mockPlaylists
-                        .map((p) => PlaylistCard(playlist: p))
-                        .toList(),
-              ),
-            ],
+            /// Albums Tab
+            GridView.count(
+              crossAxisCount: 2,
+              padding: const EdgeInsets.all(16),
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childAspectRatio: 1,
+              children: albums.map((a) => AlbumCard(album: a)).toList(),
+            ),
 
-            if (albums.isNotEmpty) ...[
-              const SizedBox(height: 24),
-              Text('Álbumes', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 1,
-                children: mockAlbums.map((a) => AlbumCard(album: a)).toList(),
-              ),
-            ],
-
-            if (users.isNotEmpty) ...[
-              const SizedBox(height: 24),
-              Text('Usuarios', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              ...users.map(
-                (u) => ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(u.avatarUrl),
-                  ),
-                  title: Text(u.name),
+            /// Users Tab (placeholder)
+            users.isEmpty
+                ? const Center(child: Text('No users found'))
+                : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: users.length,
+                  itemBuilder: (context, index) {
+                    final user = users[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(user.avatarUrl),
+                      ),
+                      title: Text(user.name),
+                    );
+                  },
                 ),
-              ),
-            ],
           ],
         ),
       ),
