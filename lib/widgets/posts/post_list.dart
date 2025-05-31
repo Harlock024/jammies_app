@@ -15,10 +15,7 @@ class PostList extends StatelessWidget {
         itemCount: mockPosts.length,
         itemBuilder: (context, index) {
           final post = mockPosts[index];
-          final bool isValid =
-              post != null &&
-              post.title != null &&
-              post.author.avatarUrl != null;
+          final bool isValid = post.author.avatarUrl != null;
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: isValid ? PostCard(post: post) : const PostCardSkeleton(),

@@ -4,14 +4,14 @@ import 'package:jammies_app/services/track_services.dart';
 import 'package:jammies_app/widgets/tracks/track_card.dart';
 
 class TrackList extends StatelessWidget {
-  const TrackList({super.key});
-
+  TrackList({super.key});
+  final TrackService trackService = TrackService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Tracks')),
       body: FutureBuilder<List<Track>>(
-        future: fetchTracks(),
+        future: trackService.fetchTracks(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
