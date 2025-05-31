@@ -5,6 +5,7 @@ class Track {
   String album;
   double duration;
   String coverUrl;
+  bool isFavorite;
 
   Track({
     required this.id,
@@ -13,6 +14,7 @@ class Track {
     required this.album,
     required this.duration,
     required this.coverUrl,
+    required this.isFavorite,
   });
 
   factory Track.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class Track {
       album: json['album'] ?? '',
       duration: json['duration'] ?? '',
       coverUrl: json['cover_url'] ?? '',
+      isFavorite: json['is_favorite'] ?? false,
     );
   }
 
@@ -34,6 +37,7 @@ class Track {
       'album': album,
       'duration': duration,
       'cover_url': coverUrl,
+      'is_favorite': isFavorite,
     };
   }
 }

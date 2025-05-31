@@ -9,6 +9,7 @@ class AudioController extends ChangeNotifier {
   final ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
   bool get currentlyLoading => isLoading.value;
   AudioPlayer get player => _player;
+  final TrackService trackService = TrackService();
 
   Track? _currentTrack;
   Track? get currentTrack => _currentTrack;
@@ -96,7 +97,7 @@ class AudioController extends ChangeNotifier {
         _audioUrl = audioUrl;
 
         if (currentTrack!.id != trackId) {
-          selectTrack(await fetchTrackById(trackId));
+          selectTrack(await trackService.fetchTrackById(trackId));
           print(' Track selected in update from ws');
         }
 

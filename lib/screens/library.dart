@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:jammies_app/models/playlist.dart';
+import 'package:jammies_app/models/track.dart';
+import 'package:jammies_app/services/favorite_track_service.dart';
+import 'package:jammies_app/services/playlist_services.dart';
+import 'package:jammies_app/widgets/playlists/playlist_card.dart';
+import 'package:jammies_app/widgets/playlists/playlist_form.dart';
+import 'package:jammies_app/widgets/tracks/track_card.dart';
 
 enum LibraryCategory { tracks, albums, playlists }
 
@@ -14,18 +21,72 @@ class LibraryScreen extends StatefulWidget {
 class _LibraryScreenState extends State<LibraryScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  final FavoriteTrackService _favoriteTrackService = FavoriteTrackService();
+  final PlaylistServices _playlistService = PlaylistServices();
+
   LibraryFilter _filter = LibraryFilter.created;
+
+  List<Track> tracks = [];
+  List<Playlist> playlists = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+
+    // 🔁 Listener para actualizar el AppBar cuando cambia la pestaña
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        setState(() {});
+      }
+    });
+
+    _fetchTracks();
+    _fetchPlaylists();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchTracks() async {
+    final fetchedTracks = await _favoriteTrackService.fetchFavoriteTracks();
+    setState(() {
+      tracks = fetchedTracks;
+    });
+  }
+
+  Future<void> _fetchPlaylists() async {
+    final fetchedPlaylists = await _playlistService.fetchPlaylists();
+    setState(() {
+      playlists = fetchedPlaylists;
+    });
+  }
+
+  void _onFilterChanged(LibraryFilter filter) {
+    setState(() {
+      _filter = filter;
+    });
+    _fetchTracks();
+    _fetchPlaylists();
+  }
+
+  void _showCreatePlaylistModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => const PlaylistForm(),
+    ).then((result) {
+      if (result != null && result is String) {
+        print('Playlist creada: $result');
+        _fetchPlaylists();
+      }
+    });
   }
 
   Widget _buildFilterChips() {
@@ -41,11 +102,7 @@ class _LibraryScreenState extends State<LibraryScreen>
                   f == LibraryFilter.created ? 'Creados por mí' : 'Guardados',
                 ),
                 selected: isSelected,
-                onSelected: (_) {
-                  setState(() {
-                    _filter = f;
-                  });
-                },
+                onSelected: (_) => _onFilterChanged(f),
               );
             }).toList(),
       ),
@@ -53,30 +110,54 @@ class _LibraryScreenState extends State<LibraryScreen>
   }
 
   Widget _buildTabContent(LibraryCategory category) {
-    String label;
     switch (category) {
       case LibraryCategory.tracks:
-        label = 'Tracks';
-        break;
-      case LibraryCategory.albums:
-        label = 'Álbumes';
-        break;
+        return tracks.isEmpty
+            ? const Center(child: Text('No hay tracks para mostrar'))
+            : ListView.builder(
+              itemCount: tracks.length,
+              itemBuilder: (context, index) => TrackCard(track: tracks[index]),
+            );
+
       case LibraryCategory.playlists:
-        label = 'Playlists';
-        break;
+        return playlists.isEmpty
+            ? const Center(child: Text('No hay playlists para mostrar'))
+            : ListView.builder(
+              itemCount: playlists.length,
+              itemBuilder:
+                  (context, index) => PlaylistCard(playlist: playlists[index]),
+            );
+
+      case LibraryCategory.albums:
+        final label =
+            _filter == LibraryFilter.created ? 'creados' : 'guardados';
+        return Center(
+          child: Text(
+            'Álbumes $label',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        );
     }
-    return Center(
-      child: Text(
-        '$label ${_filter == LibraryFilter.created ? "creados" : "guardados"}',
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isPlaylistsTab = _tabController.index == 2;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Mi Biblioteca")),
+      appBar: AppBar(
+        title: const Text("Mi Biblioteca"),
+        actions: [
+          if (isPlaylistsTab)
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: 'Nueva playlist',
+              onPressed: _showCreatePlaylistModal,
+              color: Theme.of(context).colorScheme.primary,
+              iconSize: 24,
+            ),
+        ],
+      ),
       body: Column(
         children: [
           TabBar(

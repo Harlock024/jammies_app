@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/mocks/mock_post.dart';
 import 'package:jammies_app/widgets/posts/post_card.dart';
-import 'package:jammies_app/widgets/posts/post_form.dart';
+// import 'package:jammies_app/widgets/posts/post_form.dart';
 
 class HomeScreen extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom + 110;
@@ -46,7 +45,7 @@ void _showPostForm(BuildContext context) {
           left: 20,
           right: 20,
         ),
-        child: PostForm(),
+        // child: PostForm(),
       );
     },
   );

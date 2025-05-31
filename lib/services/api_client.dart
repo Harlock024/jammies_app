@@ -9,7 +9,6 @@ class ApiClient {
 
   Future<Map<String, String>> _authHeaders() async {
     final token = await _storage.read(key: 'accessToken');
-    print('Token auth header: $token');
     return {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',

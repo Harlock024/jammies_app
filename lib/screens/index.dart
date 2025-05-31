@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/providers/audio_player.dart';
 import 'package:jammies_app/screens/home.dart';
-import 'package:jammies_app/screens/greeting.dart';
 
 import 'package:jammies_app/screens/library.dart';
 import 'package:jammies_app/screens/profile.dart';
@@ -59,10 +58,7 @@ class _IndexPageState extends State<IndexPage> {
     SearchScreen(),
     UploadScreen(),
     LibraryScreen(),
-    // GreetingScreen(onContinue: onContinue),
   ];
-
-  // static get onContinue => null;
 
   void openProfile() {
     setState(() {

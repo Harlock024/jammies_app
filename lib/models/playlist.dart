@@ -1,21 +1,29 @@
-import 'package:jammies_app/models/user.dart';
-
 class Playlist {
   String id;
   String name;
   String userId;
-  User createdBy;
+  String createdBy;
   String? description;
   String? coverUrl;
-  int trackCount;
 
   Playlist({
     required this.id,
     required this.name,
     required this.createdBy,
     required this.userId,
-    required this.trackCount,
     this.description,
     this.coverUrl,
   });
+
+  factory Playlist.fromJson(Map<String, dynamic> json) {
+    return Playlist(
+      id: json['id'],
+      name: json['name'],
+      userId: json['user_id'],
+      createdBy: json['created_by'],
+
+      description: json['description'],
+      coverUrl: json['cover_url'],
+    );
+  }
 }

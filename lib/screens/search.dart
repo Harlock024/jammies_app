@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/mocks/mock_album.dart';
-import 'package:jammies_app/mocks/mock_playlist.dart';
-import 'package:jammies_app/mocks/mock_track.dart';
+import 'package:jammies_app/models/playlist.dart';
+import 'package:jammies_app/services/playlist_services.dart';
 import 'package:jammies_app/widgets/album/album_card.dart';
 import 'package:jammies_app/widgets/playlists/playlist_card.dart';
 import 'package:jammies_app/widgets/tracks/track_card.dart';
@@ -16,32 +16,16 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen>
-    with SingleTickerProviderStateMixin {
+class _SearchScreenState extends State<SearchScreen> {
+  final PlaylistServices _playlistService = PlaylistServices();
+  final TrackService _trackService = TrackService();
+
   final TextEditingController _controller = TextEditingController();
   String _query = '';
 
   @override
   Widget build(BuildContext context) {
     final isSearching = _query.isNotEmpty;
-
-    final tracks =
-        isSearching
-            ? mockTracks
-                .where(
-                  (t) => t.title.toLowerCase().contains(_query.toLowerCase()),
-                )
-                .toList()
-            : mockTracks;
-
-    final playlists =
-        isSearching
-            ? mockPlaylists
-                .where(
-                  (p) => p.name.toLowerCase().contains(_query.toLowerCase()),
-                )
-                .toList()
-            : mockPlaylists;
 
     final albums =
         isSearching
@@ -92,7 +76,7 @@ class _SearchScreenState extends State<SearchScreen>
           children: [
             /// Tracks Tab (using FutureBuilder)
             FutureBuilder<List<Track>>(
-              future: fetchTracks(),
+              future: _trackService.fetchTracks(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -122,14 +106,35 @@ class _SearchScreenState extends State<SearchScreen>
             ),
 
             /// Playlists Tab
-            GridView.count(
-              crossAxisCount: 2,
-              padding: const EdgeInsets.all(16),
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 1,
-              children:
-                  playlists.map((p) => PlaylistCard(playlist: p)).toList(),
+            FutureBuilder<List<Playlist>>(
+              future: _playlistService.fetchPlaylists(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                final playlists = snapshot.data ?? [];
+
+                if (playlists.isEmpty) {
+                  return const Center(
+                    child: Text('No hay playlists disponibles'),
+                  );
+                }
+
+                return GridView.count(
+                  crossAxisCount: 2,
+                  padding: const EdgeInsets.all(16),
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: 1,
+                  children:
+                      playlists.map((p) => PlaylistCard(playlist: p)).toList(),
+                );
+              },
             ),
 
             /// Albums Tab

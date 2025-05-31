@@ -9,7 +9,6 @@ import 'package:jammies_app/screens/greeting.dart';
 
 import 'package:jammies_app/screens/index.dart';
 import 'package:jammies_app/screens/settings/settings.dart';
-import 'package:jammies_app/screens/profile.dart';
 import 'package:jammies_app/services/ws_services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

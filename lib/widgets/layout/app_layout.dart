@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:jammies_app/models/user.dart';
 import 'package:jammies_app/widgets/player/full_player.dart';
 import 'package:jammies_app/widgets/player/mini_player.dart';
-import 'package:jammies_app/services/auth_services.dart';
 
 class AppLayout extends StatelessWidget {
   final Widget child;
