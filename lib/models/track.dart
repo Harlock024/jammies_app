@@ -1,7 +1,7 @@
 class Track {
   String id;
   String title;
-  String artist;
+  String postedBy; // mejor nombre que artist, según JSON
   String album;
   double duration;
   String coverUrl;
@@ -10,7 +10,7 @@ class Track {
   Track({
     required this.id,
     required this.title,
-    required this.artist,
+    required this.postedBy,
     required this.album,
     required this.duration,
     required this.coverUrl,
@@ -19,11 +19,14 @@ class Track {
 
   factory Track.fromJson(Map<String, dynamic> json) {
     return Track(
-      id: json['id'],
+      id: json['id'] ?? '',
       title: json['title'] ?? '',
-      artist: json['artist'] ?? '',
+      postedBy: json['posted_by'] ?? '',
       album: json['album'] ?? '',
-      duration: json['duration'] ?? '',
+      duration:
+          (json['duration'] != null)
+              ? (json['duration'] as num).toDouble()
+              : 0.0,
       coverUrl: json['cover_url'] ?? '',
       isFavorite: json['is_favorite'] ?? false,
     );
@@ -33,7 +36,7 @@ class Track {
     return {
       'id': id,
       'title': title,
-      'artist': artist,
+      'posted_by': postedBy,
       'album': album,
       'duration': duration,
       'cover_url': coverUrl,

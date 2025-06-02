@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jammies_app/mocks/mock_post.dart';
 import 'package:jammies_app/widgets/posts/post_card.dart';
+import 'package:jammies_app/widgets/posts/post_form.dart';
+import 'package:jammies_app/widgets/posts/post_list.dart';
 // import 'package:jammies_app/widgets/posts/post_form.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -10,17 +11,7 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('Inicio')),
-      body: ListView.builder(
-        padding: EdgeInsets.only(bottom: bottomPadding),
-        itemCount: mockPosts.length,
-        itemBuilder: (context, index) {
-          final post = mockPosts[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: PostCard(post: post),
-          );
-        },
-      ),
+      body: PostList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showPostForm(context),
         backgroundColor: const Color(0xFF86CECB),
@@ -45,7 +36,7 @@ void _showPostForm(BuildContext context) {
           left: 20,
           right: 20,
         ),
-        // child: PostForm(),
+        child: PostForm(),
       );
     },
   );

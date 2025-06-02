@@ -3,30 +3,31 @@ import 'package:jammies_app/models/user.dart';
 
 class Post {
   String id;
-  String title;
-  String content;
-  String userId;
-  User author;
+  String? content;
+  String? image;
+  User postedBy;
   Track? track;
-  final String timestamp;
-  DateTime createdAt;
-  bool isLikedByMe;
-  String? imageUrl;
-  int likesCount;
-  int commentsCount;
+  String? createdAt;
 
   Post({
     required this.id,
-    required this.title,
-    required this.content,
-    required this.userId,
-    required this.author,
-    required this.track,
-    required this.timestamp,
-    required this.createdAt,
-    required this.isLikedByMe,
-    required this.imageUrl,
-    required this.likesCount,
-    required this.commentsCount,
+    this.content,
+    this.image,
+    required this.postedBy,
+    this.track,
+    this.createdAt,
   });
+
+  factory Post.fromJson(Map<String, dynamic> json) {
+    print('Post JSON: $json');
+
+    return Post(
+      id: json['id']?.toString() ?? '',
+      content: json['content']?.toString(),
+      image: json['image']?.toString(),
+      postedBy: User.fromJson(json['posted_by'] ?? {}),
+      track: json['track'] != null ? Track.fromJson(json['track']) : null,
+      createdAt: json['created_at'],
+    );
+  }
 }

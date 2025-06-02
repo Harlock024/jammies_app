@@ -20,7 +20,7 @@ class PostDetailPage extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(25),
                   child: Image.network(
-                    post.author.avatarUrl ?? '',
+                    post.postedBy.avatarUrl ?? '',
                     width: 50,
                     height: 50,
                     fit: BoxFit.cover,
@@ -48,14 +48,14 @@ class PostDetailPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      post.author.username!,
+                      post.postedBy.username ?? '',
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      post.createdAt.toLocal().toString(),
+                      post.createdAt.toString(),
                       style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                   ],
@@ -63,11 +63,11 @@ class PostDetailPage extends StatelessWidget {
               ],
             ),
             Text(
-              post.content,
+              post.content ?? '',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 18),
-            if (post.imageUrl != null) Image.network(post.imageUrl!),
+            if (post.image != null) Image.network(post.image ?? ''),
             const SizedBox(height: 12),
           ],
         ),

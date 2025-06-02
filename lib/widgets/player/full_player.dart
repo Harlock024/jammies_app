@@ -128,7 +128,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  track.artist.toUpperCase(),
+                  track.postedBy.toUpperCase(),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white70,

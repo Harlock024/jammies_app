@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/models/post.dart';
 import 'package:jammies_app/widgets/posts/post_detail_page.dart';
+import 'package:jammies_app/widgets/tracks/track_card.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;
@@ -9,160 +10,172 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  return InkWell(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PostDetailPage(post: post),
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => PostDetailPage(post: post)),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildUserInfo(context),
+              const SizedBox(height: 16),
+              if (post.content != null && post.content!.trim().isNotEmpty)
+                _buildPostText(),
+              if (post.image != null && post.image!.trim().isNotEmpty) ...[
+                const SizedBox(height: 12),
+                _buildPostImage(),
+              ],
+              if (post.track != null) ...[
+                const SizedBox(height: 12),
+                TrackCard(track: post.track!),
+              ],
+            ],
+          ),
         ),
-      );
-    },
-    borderRadius: BorderRadius.circular(12), // Match the card's radius
-    child: Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      ),
+    );
+  }
+
+  Widget _buildUserInfo(BuildContext context) {
+    return Row(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(25),
+          child: Image.network(
+            post.postedBy.avatarUrl ?? '',
+            width: 50,
+            height: 50,
+            fit: BoxFit.cover,
+            errorBuilder:
+                (context, error, stackTrace) => Container(
+                  width: 50,
+                  height: 50,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.person, color: Colors.white),
+                ),
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Container(
+                width: 50,
+                height: 50,
+                alignment: Alignment.center,
+                child: const CircularProgressIndicator(strokeWidth: 2),
+              );
+            },
+          ),
+        ),
+        const SizedBox(width: 12),
+        Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: Image.network(
-                    post.author.avatarUrl ?? '',
-                    width: 50,
-                    height: 50,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 50,
-                        height: 50,
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.person, color: Colors.white),
-                      );
-                    },
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Container(
-                        width: 50,
-                        height: 50,
-                        alignment: Alignment.center,
-                        child: const CircularProgressIndicator(strokeWidth: 2),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      post.author.username!,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      post.timestamp,
-                      style: const TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                  ],
-                ),
-              ],
+            Text(
+              post.postedBy.username ?? 'Usuario desconocido',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-
-            const SizedBox(height: 16),
-
-            Text(post.content, style: const TextStyle(fontSize: 15)),
-
-            const SizedBox(height: 12),
-
-            if (post.imageUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  post.imageUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 180,
-                      color: Colors.grey[300],
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.broken_image,
-                        size: 40,
-                        color: Colors.grey,
-                      ),
-                    );
-                  },
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      height: 180,
-                      alignment: Alignment.center,
-                      child: const CircularProgressIndicator(),
-                    );
-                  },
-                ),
-              ),
-
-            const SizedBox(height: 12),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _ActionWithCounter(
-                  icon:
-                      post.isLikedByMe ? Icons.favorite : Icons.favorite_border,
-                  label: 'Like',
-                  count: post.likesCount,
-                  iconColor: post.isLikedByMe ? Colors.red : Colors.grey[700],
-                ),
-                _ActionWithCounter(
-                  icon: Icons.mode_comment_outlined,
-                  label: 'Comment',
-                  count: post.commentsCount,
-                ),
-                _ActionWithCounter(icon: Icons.share, label: 'Share'),
-              ],
+            Text(
+              post.createdAt ?? 'Fecha desconocida',
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
             ),
           ],
         ),
-      ),
-    )
-  );
-  }
-}
-
-class _ActionWithCounter extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final int? count;
-  final Color? iconColor;
-
-  const _ActionWithCounter({
-    required this.icon,
-    required this.label,
-    this.count,
-    this.iconColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: iconColor ?? Colors.grey[700]),
-        const SizedBox(width: 4),
-        Text(
-          count != null ? '$count' : label,
-          style: TextStyle(color: Colors.grey[700], fontSize: 13),
-        ),
       ],
+    );
+  }
+
+  Widget _buildPostText() {
+    return Text(post.content!, style: const TextStyle(fontSize: 15));
+  }
+
+  Widget _buildPostImage() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Image.network(
+        post.image!,
+        fit: BoxFit.cover,
+        errorBuilder:
+            (context, error, stackTrace) => Container(
+              height: 180,
+              color: Colors.grey[300],
+              alignment: Alignment.center,
+              child: const Icon(
+                Icons.broken_image,
+                size: 40,
+                color: Colors.grey,
+              ),
+            ),
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            height: 180,
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildTrackInfo() {
+    final track = post.track!;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              track.coverUrl,
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+              errorBuilder:
+                  (context, error, stackTrace) => Container(
+                    width: 60,
+                    height: 60,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.music_note, color: Colors.grey),
+                  ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  track.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                Text(
+                  track.postedBy,
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+                Text(
+                  track.album,
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

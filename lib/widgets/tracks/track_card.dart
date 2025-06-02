@@ -58,7 +58,7 @@ class TrackCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      track.artist,
+                      track.postedBy.toUpperCase(),
                       style: Theme.of(context).textTheme.bodySmall,
                       overflow: TextOverflow.ellipsis,
                     ),
