@@ -59,7 +59,7 @@ class MiniPlayer extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    track.artist.toUpperCase(),
+                    track.postedBy.toUpperCase(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
