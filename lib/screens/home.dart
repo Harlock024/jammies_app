@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jammies_app/widgets/posts/post_card.dart';
 import 'package:jammies_app/widgets/posts/post_form.dart';
 import 'package:jammies_app/widgets/posts/post_list.dart';
-// import 'package:jammies_app/widgets/posts/post_form.dart';
+import 'package:jammies_app/widgets/posts/post_form.dart';
 
 class HomeScreen extends StatelessWidget {
   @override

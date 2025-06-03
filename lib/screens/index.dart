@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/providers/audio_player.dart';
+import 'package:jammies_app/providers/sensors_provider.dart';
 import 'package:jammies_app/screens/home.dart';
 
 import 'package:jammies_app/screens/library.dart';
@@ -23,6 +24,8 @@ class _IndexPageState extends State<IndexPage> {
   int currentIndex = 0;
   bool showProfile = false;
 
+  late MotionListener _motionListener;
+
   @override
   void initState() {
     super.initState();
@@ -45,10 +48,19 @@ class _IndexPageState extends State<IndexPage> {
 
         print('WS conectado con ${user.id}');
         print(' AudioController conectado al WebSocket');
+
+        _motionListener = MotionListener(context);
+        print(' MotionListener iniciado');
       } else {
         print('⚠️ No se pudo conectar, user es null');
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _motionListener.dispose();
+    super.dispose();
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
