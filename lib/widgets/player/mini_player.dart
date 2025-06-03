@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/providers/audio_player.dart';
+import 'package:jammies_app/providers/sensors_provider.dart';
 import 'package:provider/provider.dart';
 
 class MiniPlayer extends StatelessWidget {

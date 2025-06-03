@@ -11,6 +11,7 @@ import 'package:jammies_app/services/ws_services.dart';
 import 'package:jammies_app/widgets/layout/app_layout.dart';
 import 'package:jammies_app/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:volume_controller/volume_controller.dart';
 
 class IndexPage extends StatefulWidget {
   const IndexPage({super.key});
@@ -26,6 +27,7 @@ class _IndexPageState extends State<IndexPage> {
   @override
   void initState() {
     super.initState();
+    VolumeController.instance.showSystemUI = true;
     Future.microtask(() async {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final wsServices = Provider.of<WsServices>(context, listen: false);
@@ -45,10 +47,17 @@ class _IndexPageState extends State<IndexPage> {
 
         print('WS conectado con ${user.id}');
         print(' AudioController conectado al WebSocket');
+
+        print(' MotionListener iniciado');
       } else {
         print('⚠️ No se pudo conectar, user es null');
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
