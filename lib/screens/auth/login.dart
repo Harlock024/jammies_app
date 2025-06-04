@@ -15,7 +15,10 @@ class LoginScreen extends StatelessWidget {
             final authProvider = context.read<AuthProvider>();
             final succces = await authProvider.login(email, password);
             if (succces) {
-              Navigator.pushReplacementNamed(context, '/index');
+              Provider.of<AuthProvider>(
+                context,
+                listen: false,
+              ).setAuthenticated(true);
             } else {
               ScaffoldMessenger.of(
                 context,

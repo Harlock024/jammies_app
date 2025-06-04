@@ -7,15 +7,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRoot extends StatefulWidget {
-  final bool isFirstTime;
-  const AppRoot({super.key, required this.isFirstTime});
+  const AppRoot({super.key});
 
   @override
   State<AppRoot> createState() => _AppRootState();
 }
 
 class _AppRootState extends State<AppRoot> {
-  bool _checkingAuth = true;
+  bool _checking = true;
+  bool _isFirstTime = true;
 
   @override
   void initState() {
@@ -24,10 +24,14 @@ class _AppRootState extends State<AppRoot> {
   }
 
   Future<void> _initialize() async {
+    final prefs = await SharedPreferences.getInstance();
     final auth = Provider.of<AuthProvider>(context, listen: false);
+
+    _isFirstTime = prefs.getBool('isFirstTime') ?? true;
     await auth.checkLoginStatus();
+
     setState(() {
-      _checkingAuth = false;
+      _checking = false;
     });
   }
 
@@ -35,20 +39,20 @@ class _AppRootState extends State<AppRoot> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
 
-    if (_checkingAuth) {
+    if (_checking) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    if (widget.isFirstTime) {
+    if (_isFirstTime) {
       return GreetingScreen(
         onContinue: () async {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('isFirstTime', false);
-          Navigator.pushReplacementNamed(context, '/login');
+          setState(() => _isFirstTime = false);
         },
       );
     }
 
-    return auth.isAuthenticated ? IndexPage() : const LoginScreen();
+    return auth.isAuthenticated ? const IndexPage() : const LoginScreen();
   }
 }

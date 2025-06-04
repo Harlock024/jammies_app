@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/providers/audio_player.dart';
 import 'package:jammies_app/providers/sensors_provider.dart';
+import 'package:jammies_app/services/ws_services.dart';
+import 'package:jammies_app/widgets/devices/devices_modal.dart';
 import 'package:provider/provider.dart';
 import 'package:volume_controller/volume_controller.dart';
 
@@ -529,18 +531,23 @@ class _PlayerScreenState extends State<PlayerScreen>
                                 ],
                               ),
                             ),
-                          const Icon(
-                            Icons.speaker_sharp,
-                            color: Colors.white70,
-                            size: 28,
+                          IconButton(
+                            icon: const Icon(Icons.devices),
+                            tooltip: 'Cambiar dispositivo',
+                            onPressed: () {
+                              showDevicesBottomSheet(context, (device) {
+                                print(
+                                  '🎧 Conectarse a canal del dispositivo ${device.deviceId}',
+                                );
+                                final ws = Provider.of<WsServices>(
+                                  context,
+                                  listen: false,
+                                );
+                                ws.connect(device.deviceId);
+                              });
+                            },
                           ),
-                          const Text(
-                            "Devices",
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
+
                           const SizedBox(height: 8),
                         ],
                       ),

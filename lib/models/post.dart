@@ -19,8 +19,6 @@ class Post {
   });
 
   factory Post.fromJson(Map<String, dynamic> json) {
-    print('Post JSON: $json');
-
     return Post(
       id: json['id']?.toString() ?? '',
       content: json['content']?.toString(),

@@ -23,14 +23,12 @@ class _PostListState extends State<PostList> {
       });
 
       final fetchedPosts = await _postService.fetchPosts();
-      print("Fetched Posts: $fetchedPosts");
 
       setState(() {
         posts = fetchedPosts;
         isLoading = false;
       });
     } catch (e) {
-      print("Error fetching posts: $e");
       setState(() {
         isLoading = false;
       });

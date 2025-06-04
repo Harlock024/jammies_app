@@ -4,9 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:jammies_app/models/token_response.dart';
 import 'package:jammies_app/models/user_response.dart';
 import 'package:jammies_app/services/api_url.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthServices {
   final _storage = const FlutterSecureStorage();
+
   final String _baseUrl = "$ApiUrl/auth";
 
   Future<bool> login(String email, String password) async {
@@ -17,9 +19,6 @@ class AuthServices {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password}),
     );
-
-    print('Status code: ${res.statusCode}');
-    print('Response body: ${res.body}');
 
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body);
@@ -67,6 +66,8 @@ class AuthServices {
 
   Future<void> logout() async {
     await _storage.deleteAll();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isFirstTime', true);
   }
 
   Future<String?> get accessToken async =>

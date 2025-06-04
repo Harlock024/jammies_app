@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jammies_app/providers/audio_player.dart';
 import 'package:jammies_app/screens/home.dart';
 
@@ -7,6 +8,7 @@ import 'package:jammies_app/screens/profile.dart';
 
 import 'package:jammies_app/screens/search.dart';
 import 'package:jammies_app/screens/upload.dart';
+import 'package:jammies_app/services/devices_services.dart';
 import 'package:jammies_app/services/ws_services.dart';
 import 'package:jammies_app/widgets/layout/app_layout.dart';
 import 'package:jammies_app/providers/user_provider.dart';
@@ -23,36 +25,48 @@ class IndexPage extends StatefulWidget {
 class _IndexPageState extends State<IndexPage> {
   int currentIndex = 0;
   bool showProfile = false;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
+    if (!_initialized) {
+      _initialized = true;
+      _initDeviceAndWs();
+    }
+  }
+
+  final _storage = const FlutterSecureStorage();
+  Future<void> _initDeviceAndWs() async {
     VolumeController.instance.showSystemUI = true;
-    Future.microtask(() async {
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final wsServices = Provider.of<WsServices>(context, listen: false);
-      await userProvider.loadUserFromStorage();
-      final user = userProvider.user;
-      final audioController = Provider.of<AudioController>(
-        context,
-        listen: false,
-      );
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final wsServices = Provider.of<WsServices>(context, listen: false);
+    final audioController = Provider.of<AudioController>(
+      context,
+      listen: false,
+    );
+    final deviceServices = Provider.of<DevicesServices>(context, listen: false);
+    final storedDeviceId = await _storage.read(key: 'device_id');
 
-      if (user != null) {
-        wsServices.connect(user.id);
+    await userProvider.loadUserFromStorage();
+    final user = userProvider.user;
+    if (user == null) return;
 
-        audioController.setWsServices(wsServices);
+    String? deviceId = storedDeviceId;
 
-        wsServices.onMessage = audioController.updateFromWs;
+    if (storedDeviceId == null) {
+      print('📱 No se encontró device_id, registrando nuevo dispositivo...');
+      final success = await deviceServices.addNewDevice();
+      if (!success) return;
+      deviceId = await _storage.read(key: 'device_id');
+    }
 
-        print('WS conectado con ${user.id}');
-        print(' AudioController conectado al WebSocket');
-
-        print(' MotionListener iniciado');
-      } else {
-        print('⚠️ No se pudo conectar, user es null');
-      }
-    });
+    if (deviceId != null) {
+      wsServices.connect(deviceId);
+      audioController.setWsServices(wsServices);
+      wsServices.onMessage = audioController.updateFromWs;
+      print('🔌 WS conectado con device_id: $deviceId');
+    }
   }
 
   @override

@@ -9,6 +9,7 @@ import 'package:jammies_app/screens/greeting.dart';
 
 import 'package:jammies_app/screens/index.dart';
 import 'package:jammies_app/screens/settings/settings.dart';
+import 'package:jammies_app/services/devices_services.dart';
 import 'package:jammies_app/services/ws_services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,15 +26,15 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AudioController()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         Provider(create: (_) => WsServices()),
+        Provider<DevicesServices>(create: (_) => DevicesServices()),
       ],
-      child: MyApp(isFirstTime: isFirstTime),
+      child: MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  final bool isFirstTime;
-  const MyApp({super.key, required this.isFirstTime});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,20 +56,21 @@ class MyApp extends StatelessWidget {
       ),
 
       debugShowCheckedModeBanner: false,
-      initialRoute: '/greetings',
+      initialRoute: '/',
       builder: (context, child) {
         return child!;
       },
       routes: {
-        '/': (context) => AppRoot(isFirstTime: isFirstTime),
+        '/': (context) => AppRoot(),
         '/greeting':
             (context) => GreetingScreen(
-              onContinue: () {
+              onContinue: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setBool('isFirstTime', false);
                 Navigator.pushReplacementNamed(context, '/login');
               },
             ),
         '/login': (context) => const LoginScreen(),
-        '/index': (context) => IndexPage(),
         '/register': (context) => RegisterScreen(),
         "/settings": (context) => const SettingsScreen(),
       },
