@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 void showDevicesBottomSheet(
   BuildContext context,
   Function(Device) onSelect,
+  String
+  currentConnectedDeviceId, // <-- Añadimos este parámetro para saber cuál está conectado ahora
 ) async {
   final storage = const FlutterSecureStorage();
   final currentDeviceId = await storage.read(key: 'device_id');
@@ -40,7 +42,6 @@ void showDevicesBottomSheet(
 
             final devices = snapshot.data ?? [];
 
-            // Separa el dispositivo actual del resto
             final currentDevice = devices.firstWhere(
               (d) => d.deviceId == currentDeviceId,
               orElse:
@@ -62,13 +63,26 @@ void showDevicesBottomSheet(
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
+
+                // Mostrar dispositivo actual con opción de reconectar si no está conectado
                 ListTile(
                   leading: const Icon(Icons.phone_android),
                   title: const Text('Este dispositivo'),
                   subtitle: Text(
                     currentDevice.deviceName ?? 'Nombre desconocido',
                   ),
+                  trailing:
+                      currentConnectedDeviceId != currentDeviceId
+                          ? TextButton(
+                            child: const Text('Volver'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              onSelect(currentDevice);
+                            },
+                          )
+                          : null,
                 ),
+
                 if (otherDevices.isNotEmpty) ...[
                   const Divider(),
                   const Text(

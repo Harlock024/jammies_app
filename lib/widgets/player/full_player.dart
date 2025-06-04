@@ -16,6 +16,7 @@ class PlayerScreen extends StatefulWidget {
 class _PlayerScreenState extends State<PlayerScreen>
     with TickerProviderStateMixin {
   MotionListener? _motionListener;
+
   double _currentVolume = 0.5;
   String _lastAction = "";
   bool _showMotionFeedback = false;
@@ -166,6 +167,8 @@ class _PlayerScreenState extends State<PlayerScreen>
       }
     });
   }
+
+  final WsServices _wsService = WsServices();
 
   @override
   Widget build(BuildContext context) {
@@ -535,16 +538,20 @@ class _PlayerScreenState extends State<PlayerScreen>
                             icon: const Icon(Icons.devices),
                             tooltip: 'Cambiar dispositivo',
                             onPressed: () {
+                              final currentConnectedDeviceId =
+                                  _wsService.currentRoomId;
                               showDevicesBottomSheet(context, (device) {
                                 print(
-                                  '🎧 Conectarse a canal del dispositivo ${device.deviceId}',
+                                  'Conectando a dispositivo ${device.deviceId}',
                                 );
-                                final ws = Provider.of<WsServices>(
-                                  context,
-                                  listen: false,
-                                );
-                                ws.connect(device.deviceId);
-                              });
+                                _wsService.connect(device.deviceId);
+                                _wsService.onMessage = (data) {
+                                  Provider.of<AudioController>(
+                                    context,
+                                    listen: false,
+                                  ).updateFromWs(data);
+                                };
+                              }, currentConnectedDeviceId);
                             },
                           ),
 
