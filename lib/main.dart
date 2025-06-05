@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jammies_app/AppRoot.dart';
 import 'package:jammies_app/providers/audio_player.dart';
 import 'package:jammies_app/providers/auth_provider.dart';
+import 'package:jammies_app/providers/queue_controller.dart';
 import 'package:jammies_app/providers/user_provider.dart';
 import 'package:jammies_app/screens/auth/login.dart';
 import 'package:jammies_app/screens/auth/register.dart';
@@ -27,6 +28,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         Provider(create: (_) => WsServices()),
         Provider<DevicesServices>(create: (_) => DevicesServices()),
+        ChangeNotifierProvider(create: (_) => QueueController()),
       ],
       child: MyApp(),
     ),

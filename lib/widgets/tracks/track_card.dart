@@ -5,6 +5,7 @@ import 'package:jammies_app/providers/audio_player.dart';
 import 'package:jammies_app/services/favorite_track_service.dart';
 import 'package:jammies_app/services/playlist_services.dart';
 import 'package:provider/provider.dart';
+import 'package:jammies_app/providers/queue_controller.dart';
 
 class TrackCard extends StatelessWidget {
   final Track track;
@@ -147,7 +148,6 @@ class TrackCard extends StatelessWidget {
                 );
               },
             ),
-            // Overlay de estado actual
             if (isCurrentTrack)
               Container(
                 width: 70,
@@ -273,6 +273,21 @@ class TrackCard extends StatelessWidget {
           onPressed: () => _showPlaylistsDialog(context),
           icon: Icons.playlist_add,
           tooltip: 'Agregar a playlist',
+        ),
+
+        const SizedBox(width: 8),
+
+        // Add to queue button
+        _buildActionButton(
+          onPressed: () {
+            final queueController = Provider.of<QueueController>(context, listen: false);
+            queueController.addToQueue(track);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('${track.title} agregado a la cola')),
+            );
+          },
+          icon: Icons.queue_music,
+          tooltip: 'Agregar a la cola',
         ),
 
         const SizedBox(width: 8),

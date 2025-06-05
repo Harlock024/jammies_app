@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jammies_app/providers/audio_player.dart';
+import 'package:jammies_app/providers/queue_controller.dart';
 import 'package:jammies_app/screens/home.dart';
 
 import 'package:jammies_app/screens/library.dart';
@@ -67,6 +68,12 @@ class _IndexPageState extends State<IndexPage> {
       wsServices.onMessage = audioController.updateFromWs;
       print('🔌 WS conectado con device_id: $deviceId');
     }
+    final queueController = Provider.of<QueueController>(
+      context,
+      listen: false,
+    );
+    audioController.queueController = queueController;
+    queueController.setAudioController(audioController);
   }
 
   @override

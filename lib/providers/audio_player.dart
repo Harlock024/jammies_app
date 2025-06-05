@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/models/track.dart';
+import 'package:jammies_app/providers/queue_controller.dart';
 import 'package:jammies_app/services/track_services.dart';
 import 'package:jammies_app/services/ws_services.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -10,6 +11,7 @@ class AudioController extends ChangeNotifier {
   bool get currentlyLoading => isLoading.value;
   AudioPlayer get player => _player;
   final TrackService trackService = TrackService();
+  late QueueController queueController;
 
   Track? _currentTrack;
   Track? get currentTrack => _currentTrack;
@@ -45,10 +47,14 @@ class AudioController extends ChangeNotifier {
       _totalDuration = duration;
       notifyListeners();
     });
-
-    _player.onPlayerComplete.listen((event) {
+    _player.onPlayerComplete.listen((event) async {
       _isPlaying = false;
       _currentPosition = Duration.zero;
+
+      final hasNext = queueController.next();
+      if (hasNext) {
+        await playCurrentFromQueue();
+      }
       notifyListeners();
     });
   }
@@ -166,6 +172,16 @@ class AudioController extends ChangeNotifier {
     } finally {
       _isSyncingFromWs = false;
     }
+  }
+
+  Future<void> playCurrentFromQueue() async {
+    final track = queueController.current;
+    if (track == null) return;
+
+    _currentTrack = track;
+    notifyListeners();
+
+    _wsServices?.sendEvent(event: 'playing', trackId: track.id, currentTime: 0);
   }
 
   Future<void> play() async {
