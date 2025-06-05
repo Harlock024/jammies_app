@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jammies_app/providers/audio_player.dart';
 import 'package:jammies_app/providers/sensors_provider.dart';
+import 'package:jammies_app/services/ws_services.dart';
+import 'package:jammies_app/widgets/devices/devices_modal.dart';
 import 'package:provider/provider.dart';
 import 'package:volume_controller/volume_controller.dart';
 
@@ -14,6 +16,7 @@ class PlayerScreen extends StatefulWidget {
 class _PlayerScreenState extends State<PlayerScreen>
     with TickerProviderStateMixin {
   MotionListener? _motionListener;
+
   double _currentVolume = 0.5;
   String _lastAction = "";
   bool _showMotionFeedback = false;
@@ -164,6 +167,8 @@ class _PlayerScreenState extends State<PlayerScreen>
       }
     });
   }
+
+  final WsServices _wsService = WsServices();
 
   @override
   Widget build(BuildContext context) {
@@ -364,7 +369,6 @@ class _PlayerScreenState extends State<PlayerScreen>
                             formatDuration(audioController.currentPosition),
                             style: const TextStyle(color: Colors.white70),
                           ),
-                          // Indicador de volumen sutil
                           AnimatedBuilder(
                             animation: _volumeAnimation,
                             builder: (context, child) {
@@ -529,18 +533,49 @@ class _PlayerScreenState extends State<PlayerScreen>
                                 ],
                               ),
                             ),
-                          const Icon(
-                            Icons.speaker_sharp,
-                            color: Colors.white70,
-                            size: 28,
+                          IconButton(
+                            icon: const Icon(Icons.devices),
+                            tooltip: 'Cambiar dispositivo',
+                            onPressed: () {
+                              final currentConnectedDeviceId =
+                                  _wsService.currentRoomId;
+
+                              showDevicesBottomSheet(context, (device) {
+                                print(
+                                  'Conectando a dispositivo ${device.deviceId}',
+                                );
+
+                                _wsService.onMessage = (data) {
+                                  Provider.of<AudioController>(
+                                    context,
+                                    listen: false,
+                                  ).updateFromWs(data);
+                                };
+
+                                final previousRoomId = _wsService.currentRoomId;
+
+                                _wsService.disconnect();
+
+                                _wsService.connect(
+                                  device.deviceId,
+                                  onConnected: () {
+                                    if (previousRoomId.isNotEmpty &&
+                                        previousRoomId != device.deviceId) {
+                                      _wsService.sendRawJson({
+                                        'event': 'request_state',
+                                        'target_room': previousRoomId,
+                                      });
+
+                                      print(
+                                        '🔄 Enviado request_state a ${previousRoomId}',
+                                      );
+                                    }
+                                  },
+                                );
+                              }, currentConnectedDeviceId);
+                            },
                           ),
-                          const Text(
-                            "Devices",
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
+
                           const SizedBox(height: 8),
                         ],
                       ),
