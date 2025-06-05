@@ -50,18 +50,24 @@ class QueueController with ChangeNotifier {
   }
 
   bool next() {
-    print(
-      'next() called, currentIndex: $_currentIndex, queue length: ${_queue.length}',
-    );
-    if (_currentIndex < _queue.length - 1) {
-      _currentIndex++;
-      print('Playing next track, new index: $_currentIndex');
-      _audioController.playCurrentFromQueue();
-      notifyListeners();
-      return true;
+    if (_queue.isEmpty) {
+      print('No hay canciones en cola para avanzar');
+      return false;
     }
-    print('No next track available');
-    return false;
+
+    _currentIndex = 0;
+
+    final nextTrack = _queue.removeAt(_currentIndex);
+
+    _audioController.selectTrack(nextTrack);
+
+    notifyListeners();
+
+    _audioController.playCurrentFromQueue();
+
+    print('Reproduciendo siguiente canción desde la cola');
+
+    return true;
   }
 
   bool previous() {

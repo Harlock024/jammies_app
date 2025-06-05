@@ -72,7 +72,7 @@ class TrackCard extends StatelessWidget {
                       const SizedBox(width: 14),
                       Expanded(child: _buildTrackInfo(isCurrentTrack)),
                       const SizedBox(width: 12),
-                      _buildActions(
+                      _buildResponsiveActions(
                         context,
                         audioController,
                         isPlaying,
@@ -91,8 +91,8 @@ class TrackCard extends StatelessWidget {
 
   Widget _buildAlbumCover(bool isCurrentTrack, bool isLoading) {
     return Container(
-      width: 70,
-      height: 70,
+      width: 60, // Reducido de 70 a 60 para dar más espacio
+      height: 60,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
@@ -109,13 +109,13 @@ class TrackCard extends StatelessWidget {
           children: [
             Image.network(
               track.coverUrl,
-              width: 70,
-              height: 70,
+              width: 60,
+              height: 60,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
-                  width: 70,
-                  height: 70,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
                     color: Colors.grey[800],
                     borderRadius: BorderRadius.circular(9),
@@ -123,23 +123,23 @@ class TrackCard extends StatelessWidget {
                   child: Icon(
                     Icons.music_note,
                     color: Colors.white.withOpacity(0.6),
-                    size: 30,
+                    size: 25,
                   ),
                 );
               },
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
                 return Container(
-                  width: 70,
-                  height: 70,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
                     color: Colors.grey[800],
                     borderRadius: BorderRadius.circular(9),
                   ),
                   alignment: Alignment.center,
                   child: const SizedBox(
-                    width: 20,
-                    height: 20,
+                    width: 18,
+                    height: 18,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
@@ -150,8 +150,8 @@ class TrackCard extends StatelessWidget {
             ),
             if (isCurrentTrack)
               Container(
-                width: 70,
-                height: 70,
+                width: 60,
+                height: 60,
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.4),
                   borderRadius: BorderRadius.circular(9),
@@ -160,8 +160,8 @@ class TrackCard extends StatelessWidget {
                   child:
                       isLoading
                           ? const SizedBox(
-                            width: 24,
-                            height: 24,
+                            width: 20,
+                            height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(
@@ -172,7 +172,7 @@ class TrackCard extends StatelessWidget {
                           : Icon(
                             Icons.graphic_eq,
                             color: Colors.white,
-                            size: 24,
+                            size: 20,
                           ),
                 ),
               ),
@@ -191,13 +191,13 @@ class TrackCard extends StatelessWidget {
           style: TextStyle(
             color:
                 isCurrentTrack ? Colors.white : Colors.white.withOpacity(0.9),
-            fontSize: 16,
+            fontSize: 15, // Reducido de 16 a 15
             fontWeight: isCurrentTrack ? FontWeight.w600 : FontWeight.w500,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 3),
         Text(
           track.postedBy.toUpperCase(),
           style: TextStyle(
@@ -205,19 +205,19 @@ class TrackCard extends StatelessWidget {
                 isCurrentTrack
                     ? Colors.white.withOpacity(0.8)
                     : Colors.white.withOpacity(0.6),
-            fontSize: 12,
+            fontSize: 11, // Reducido de 12 a 11
             fontWeight: FontWeight.w500,
             letterSpacing: 0.5,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 5),
         Row(
           children: [
             Icon(
               Icons.access_time,
-              size: 14,
+              size: 12, // Reducido de 14 a 12
               color: Colors.white.withOpacity(0.5),
             ),
             const SizedBox(width: 4),
@@ -225,7 +225,7 @@ class TrackCard extends StatelessWidget {
               _formatDuration(track.duration),
               style: TextStyle(
                 color: Colors.white.withOpacity(0.5),
-                fontSize: 12,
+                fontSize: 11, // Reducido de 12 a 11
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -235,16 +235,17 @@ class TrackCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActions(
+  Widget _buildResponsiveActions(
     BuildContext context,
     AudioController audioController,
     bool isPlaying,
     bool isLoading,
   ) {
+    // Solo mostramos el botón de play/pause y el menú de opciones
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Play/Pause button
+        // Play/Pause button - siempre visible
         _buildActionButton(
           onPressed:
               isLoading
@@ -268,44 +269,127 @@ class TrackCard extends StatelessWidget {
 
         const SizedBox(width: 8),
 
-        // Playlist button
-        _buildActionButton(
-          onPressed: () => _showPlaylistsDialog(context),
-          icon: Icons.playlist_add,
-          tooltip: 'Agregar a playlist',
-        ),
-
-        const SizedBox(width: 8),
-
-        // Add to queue button
-        _buildActionButton(
-          onPressed: () {
-            final queueController = Provider.of<QueueController>(context, listen: false);
-            queueController.addToQueue(track);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${track.title} agregado a la cola')),
-            );
-          },
-          icon: Icons.queue_music,
-          tooltip: 'Agregar a la cola',
-        ),
-
-        const SizedBox(width: 8),
-
-        // Favorite button
-        FavoriteIconButton(track: track),
-
-        // Delete button (solo si está en playlist)
-        if (playlistId != null) ...[
-          const SizedBox(width: 8),
-          _buildActionButton(
-            onPressed: () => _confirmDelete(context),
-            icon: Icons.delete_outline,
-            tooltip: 'Eliminar de playlist',
-            color: Colors.red.withOpacity(0.7),
-          ),
-        ],
+        // Menú de opciones
+        _buildOptionsMenu(context),
       ],
+    );
+  }
+
+  Widget _buildOptionsMenu(BuildContext context) {
+    return PopupMenuButton<String>(
+      onSelected: (value) async {
+        switch (value) {
+          case 'queue':
+            _addToQueue(context);
+            break;
+          case 'playlist':
+            _showPlaylistsDialog(context);
+            break;
+          case 'favorite':
+            _toggleFavorite(context);
+            break;
+          case 'delete':
+            if (playlistId != null) {
+              _confirmDelete(context);
+            }
+            break;
+        }
+      },
+      color: const Color(0xFF2A2A2A),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Icon(
+          Icons.more_vert,
+          size: 18,
+          color: Colors.white.withOpacity(0.8),
+        ),
+      ),
+      itemBuilder:
+          (BuildContext context) => [
+            PopupMenuItem<String>(
+              value: 'queue',
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.queue_music,
+                    size: 18,
+                    color: Colors.white.withOpacity(0.8),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Añadir a la cola',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: 'playlist',
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.playlist_add,
+                    size: 18,
+                    color: Colors.white.withOpacity(0.8),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Agregar a playlist',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: 'favorite',
+              child: Row(
+                children: [
+                  Icon(
+                    track.isFavorite ? Icons.favorite : Icons.favorite_border,
+                    size: 18,
+                    color:
+                        track.isFavorite
+                            ? Colors.red.withOpacity(0.8)
+                            : Colors.white.withOpacity(0.8),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    track.isFavorite
+                        ? 'Quitar de favoritos'
+                        : 'Agregar a favoritos',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            if (playlistId != null)
+              PopupMenuItem<String>(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.delete_outline,
+                      size: 18,
+                      color: Colors.red.withOpacity(0.8),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Eliminar de playlist',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ],
+                ),
+              ),
+          ],
     );
   }
 
@@ -339,6 +423,60 @@ class TrackCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _addToQueue(BuildContext context) {
+    try {
+      // Añadir el track a la cola usando el QueueController
+      context.read<QueueController>().addToQueue(track);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${track.title} añadido a la cola'),
+          backgroundColor: Colors.green.withOpacity(0.8),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al añadir a la cola: $e'),
+          backgroundColor: Colors.red.withOpacity(0.8),
+        ),
+      );
+    }
+  }
+
+  void _toggleFavorite(BuildContext context) async {
+    // Usar el widget FavoriteIconButton existente sería mejor,
+    // pero para simplificar, manejamos directamente aquí
+    final favoriteService = FavoriteTrackService();
+
+    try {
+      if (track.isFavorite) {
+        await favoriteService.removeTrackToFavorite(track.id);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Eliminado de favoritos'),
+            backgroundColor: Colors.green.withOpacity(0.8),
+          ),
+        );
+      } else {
+        await favoriteService.addTrackToFavorite(track.id);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Agregado a favoritos'),
+            backgroundColor: Colors.green.withOpacity(0.8),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al actualizar favorito: $e'),
+          backgroundColor: Colors.red.withOpacity(0.8),
+        ),
+      );
+    }
   }
 
   void _confirmDelete(BuildContext context) async {
@@ -500,6 +638,7 @@ String _formatDuration(double duration) {
   return '${minutes}:${seconds.toString().padLeft(2, '0')}';
 }
 
+// Widget de botón de favorito más simple para el menú
 class FavoriteIconButton extends StatefulWidget {
   final Track track;
 
