@@ -10,8 +10,10 @@ class WsServices {
 
   Function(Map<String, dynamic>)? onMessage;
 
-  void connect(String deviceId) {
-    if (_connected) return;
+  void connect(String deviceId, {void Function()? onConnected}) {
+    if (_connected) {
+      disconnect();
+    }
 
     final uri = Uri.parse('$WsUrl/ws?room_id=$deviceId');
     print('uri connected $uri');
@@ -19,16 +21,23 @@ class WsServices {
 
     _channel = WebSocketChannel.connect(uri);
     _connected = true;
+    currentRoomId = deviceId;
 
     _channel!.sink.add(jsonEncode({'event': 'join_room'}));
-    currentRoomId = deviceId;
     print('WS connected');
+
+    bool hasCalledOnConnected = false;
 
     _channel!.stream.listen(
       (message) {
         final data = jsonDecode(message);
         print('WS mensaje recibido: $data');
         onMessage?.call(data);
+
+        if (!hasCalledOnConnected && onConnected != null) {
+          hasCalledOnConnected = true;
+          onConnected();
+        }
       },
       onDone: () {
         print('WS conexión cerrada');
@@ -45,17 +54,26 @@ class WsServices {
     required String event,
     required String trackId,
     required double currentTime,
+    String? targetRoom,
   }) {
     if (!_connected || _channel == null) return;
 
-    final msg = jsonEncode({
-      'event': event, // "playing" , "paused" o "seek"
+    final msg = {
+      'event': event,
       'track_id': trackId,
       'current_time': currentTime,
-    });
+    };
 
-    print('WS enviando: $msg');
-    _channel!.sink.add(msg);
+    if (targetRoom != null) {
+      msg['target_room'] = targetRoom;
+    }
+
+    _channel!.sink.add(jsonEncode(msg));
+  }
+
+  void sendRawJson(Map<String, dynamic> json) {
+    if (!_connected || _channel == null) return;
+    _channel!.sink.add(jsonEncode(json));
   }
 
   void disconnect() {

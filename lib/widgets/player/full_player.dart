@@ -369,7 +369,6 @@ class _PlayerScreenState extends State<PlayerScreen>
                             formatDuration(audioController.currentPosition),
                             style: const TextStyle(color: Colors.white70),
                           ),
-                          // Indicador de volumen sutil
                           AnimatedBuilder(
                             animation: _volumeAnimation,
                             builder: (context, child) {
@@ -540,17 +539,39 @@ class _PlayerScreenState extends State<PlayerScreen>
                             onPressed: () {
                               final currentConnectedDeviceId =
                                   _wsService.currentRoomId;
+
                               showDevicesBottomSheet(context, (device) {
                                 print(
                                   'Conectando a dispositivo ${device.deviceId}',
                                 );
-                                _wsService.connect(device.deviceId);
+
                                 _wsService.onMessage = (data) {
                                   Provider.of<AudioController>(
                                     context,
                                     listen: false,
                                   ).updateFromWs(data);
                                 };
+
+                                final previousRoomId = _wsService.currentRoomId;
+
+                                _wsService.disconnect();
+
+                                _wsService.connect(
+                                  device.deviceId,
+                                  onConnected: () {
+                                    if (previousRoomId.isNotEmpty &&
+                                        previousRoomId != device.deviceId) {
+                                      _wsService.sendRawJson({
+                                        'event': 'request_state',
+                                        'target_room': previousRoomId,
+                                      });
+
+                                      print(
+                                        '🔄 Enviado request_state a ${previousRoomId}',
+                                      );
+                                    }
+                                  },
+                                );
                               }, currentConnectedDeviceId);
                             },
                           ),

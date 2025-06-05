@@ -24,6 +24,8 @@ class AudioController extends ChangeNotifier {
   Duration get currentPosition => _currentPosition;
   Duration get totalDuration => _totalDuration;
 
+  bool _isSyncingFromWs = false;
+
   AudioController() {
     _initializePlayer();
   }
@@ -55,6 +57,24 @@ class AudioController extends ChangeNotifier {
     _wsServices = ws;
   }
 
+  Future<void> loadTrackFromWs(Track track, String audioUrl) async {
+    _currentTrack = track;
+    _audioUrl = null;
+    notifyListeners();
+
+    isLoading.value = true;
+    try {
+      _audioUrl = audioUrl;
+      await _player.setSourceUrl(_audioUrl!);
+      await Future.delayed(Duration(milliseconds: 200));
+    } catch (e) {
+      print('Error loading audio from WS: $e');
+    } finally {
+      isLoading.value = false;
+      notifyListeners();
+    }
+  }
+
   void selectTrack(Track track) {
     if (_currentTrack?.id == track.id) {
       print('⚠️ La misma canción ya está seleccionada. No se hace nada.');
@@ -66,12 +86,40 @@ class AudioController extends ChangeNotifier {
     notifyListeners();
 
     print('new track selected: ${track.id}');
-    _wsServices?.sendEvent(event: "playing", trackId: track.id, currentTime: 0);
+
+    if (!_isSyncingFromWs) {
+      _wsServices?.sendEvent(
+        event: "playing",
+        trackId: track.id,
+        currentTime: 0,
+      );
+    }
   }
 
   Future<void> updateFromWs(Map<String, dynamic> data) async {
     print('updateFromWs called with data: $data');
+
+    _isSyncingFromWs = true;
     try {
+      if (data['event'] == 'request_state') {
+        final targetRoom = data['target_room'];
+        print('📥 Received request_state in room $targetRoom');
+
+        if (_currentTrack != null && _audioUrl != null) {
+          final response = {
+            'event': _isPlaying ? 'playing' : 'paused',
+            'track_id': _currentTrack!.id,
+            'audio_url': _audioUrl,
+            'current_time': _currentPosition.inMilliseconds / 1000.0,
+            'target_room': targetRoom,
+          };
+
+          _wsServices?.sendRawJson(response);
+          print('📤 Sent state_response to room $targetRoom');
+        }
+        return;
+      }
+
       if (data['event'] != 'playing' &&
           data['event'] != 'paused' &&
           data['event'] != 'seek') {
@@ -82,83 +130,46 @@ class AudioController extends ChangeNotifier {
       final trackId = data['track_id'] as String;
       final audioUrl = data['audio_url'] as String?;
       final currentTime = (data['current_time'] as num).toDouble();
-      print(
-        ' Parsed data - TrackId: $trackId, AudioUrl: $audioUrl, CurrentTime: $currentTime',
-      );
 
-      print(
-        ' Track ID matches. Processing WS event: ${data['event']} for track: $trackId',
-      );
-
-      // Si hay una nueva URL de audio, cargarla
       if (audioUrl != null && audioUrl != _audioUrl) {
-        print(' Loading new audio URL: $audioUrl');
         isLoading.value = true;
-        _audioUrl = audioUrl;
 
-        if (currentTrack!.id != trackId) {
-          selectTrack(await trackService.fetchTrackById(trackId));
-          print(' Track selected in update from ws');
+        if (_currentTrack == null || _currentTrack!.id != trackId) {
+          final track = await trackService.fetchTrackById(trackId);
+          await loadTrackFromWs(track, audioUrl);
+          print('🎵 Track updated from WebSocket');
+        } else {
+          _audioUrl = audioUrl;
+          await _player.setSourceUrl(_audioUrl!);
+          await Future.delayed(Duration(milliseconds: 200));
         }
 
-        try {
-          print(' Calling _player.setSourceUrl...');
-          await _player.setSourceUrl(audioUrl);
-          print(' Audio URL loaded successfully');
-          print(' Player state after loading: ${_player.state}');
-        } catch (e) {
-          print('❌ Error loading audio URL: $e');
-          print(' Player state after error: ${_player.state}');
-          isLoading.value = false;
-          return;
-        } finally {
-          isLoading.value = false;
-        }
+        isLoading.value = false;
       }
 
-      // Hacer seek a la posición indicada
       final seekPosition = Duration(milliseconds: (currentTime * 1000).toInt());
-      print(' Seeking to position: ${seekPosition.inSeconds}s');
       await _player.seek(seekPosition);
-      print(' Seeked to position: ${seekPosition.inSeconds}s');
 
-      // Ejecutar la acción según el evento
       if (data['event'] == 'playing') {
-        print(' Starting playback...');
-        print(' Player state before play: ${_player.state}');
         await _player.resume();
         _isPlaying = true;
-        print('Playback started. Player state: ${_player.state}');
       } else if (data['event'] == 'paused') {
-        print(' Pausing playback...');
         await _player.pause();
         _isPlaying = false;
-        print(' Playback paused');
-      } else if (data['event'] == 'seek') {
-        print(' Seek completed');
       }
 
       notifyListeners();
-      print(
-        ' WS event processed successfully. IsPlaying: $_isPlaying, PlayerState: ${_player.state}',
-      );
-    } catch (e, stackTrace) {
+    } catch (e, stack) {
       print('❌ Error in updateFromWs: $e');
-      print(' StackTrace: $stackTrace');
+      print(' StackTrace: $stack');
       isLoading.value = false;
+    } finally {
+      _isSyncingFromWs = false;
     }
   }
 
   Future<void> play() async {
-    if (_currentTrack == null) {
-      print('No current track to play');
-      return;
-    }
-
-    if (_audioUrl == null) {
-      print('No audio URL available');
-      return;
-    }
+    if (_currentTrack == null || _audioUrl == null) return;
 
     try {
       if (_player.state == PlayerState.paused) {
@@ -169,54 +180,47 @@ class AudioController extends ChangeNotifier {
       _isPlaying = true;
       notifyListeners();
 
-      final currentTime = _currentPosition.inMilliseconds / 1000.0;
-      _wsServices?.sendEvent(
-        event: "playing",
-        trackId: _currentTrack!.id,
-        currentTime: currentTime,
-      );
-      print('Play command sent via WS');
+      if (!_isSyncingFromWs) {
+        final currentTime = _currentPosition.inMilliseconds / 1000.0;
+        _wsServices?.sendEvent(
+          event: "playing",
+          trackId: _currentTrack!.id,
+          currentTime: currentTime,
+        );
+      }
     } catch (e) {
       print('Error playing audio: $e');
     }
   }
 
-  Future<void> seek(Duration position) async {
+  Future<void> pause() async {
     if (_currentTrack == null) return;
 
-    try {
-      await _player.seek(position);
-      _wsServices?.sendEvent(
-        event: "seek",
-        trackId: _currentTrack!.id,
-        currentTime: position.inMilliseconds / 1000.0,
-      );
-      print('Seek to ${position.inSeconds}s');
-    } catch (e) {
-      print('Error seeking: $e');
-    }
-  }
+    await _player.pause();
+    _isPlaying = false;
+    notifyListeners();
 
-  Future<void> pause() async {
-    if (_currentTrack == null) {
-      print('No current track to pause');
-      return;
-    }
-
-    try {
+    if (!_isSyncingFromWs) {
       final currentTime = _currentPosition.inMilliseconds / 1000.0;
       _wsServices?.sendEvent(
         event: "paused",
         trackId: _currentTrack!.id,
         currentTime: currentTime,
       );
+    }
+  }
 
-      await _player.pause();
-      _isPlaying = false;
-      notifyListeners();
-      print('Pause command sent via WS');
-    } catch (e) {
-      print('Error pausing audio: $e');
+  Future<void> seek(Duration position) async {
+    if (_currentTrack == null) return;
+
+    await _player.seek(position);
+
+    if (!_isSyncingFromWs) {
+      _wsServices?.sendEvent(
+        event: "seek",
+        trackId: _currentTrack!.id,
+        currentTime: position.inMilliseconds / 1000.0,
+      );
     }
   }
 
