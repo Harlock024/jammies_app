@@ -9,7 +9,7 @@ class PostCardSkeleton extends StatelessWidget {
       height: 150,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Colors.black12,
         borderRadius: BorderRadius.circular(12),
       ),
       child: const Column(

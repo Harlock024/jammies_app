@@ -113,25 +113,99 @@ class _IndexPageState extends State<IndexPage> {
           user: user,
           scaffoldKey: _scaffoldKey,
           onDrawerTap: () => _scaffoldKey.currentState?.openDrawer(),
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            currentIndex: currentIndex,
-            onTap: goToTab,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: "Inicio"),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: "Buscar",
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF2D2D2D), // Gris oscuro
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: SizedBox(
+                height: 65,
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                  ),
+                  child: BottomNavigationBar(
+                    type: BottomNavigationBarType.fixed,
+                    currentIndex: currentIndex,
+                    onTap: goToTab,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    selectedItemColor:
+                        Colors.white, // Color del ítem seleccionado
+                    unselectedItemColor:
+                        Colors.grey[400], // Color de ítems no seleccionados
+                    selectedFontSize: 12,
+                    unselectedFontSize: 11,
+                    selectedLabelStyle: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      height: 1.5,
+                    ),
+                    unselectedLabelStyle: const TextStyle(
+                      fontWeight: FontWeight.w400,
+                      height: 1.5,
+                    ),
+                    items: [
+                      BottomNavigationBarItem(
+                        icon: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Icon(
+                            currentIndex == 0
+                                ? Icons.home
+                                : Icons.home_outlined,
+                            size: 26,
+                          ),
+                        ),
+                        label: "Inicio",
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Icon(
+                            currentIndex == 1
+                                ? Icons.search
+                                : Icons.search_outlined,
+                            size: 26,
+                          ),
+                        ),
+                        label: "Buscar",
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Icon(
+                            currentIndex == 2
+                                ? Icons.add_box
+                                : Icons.add_box_outlined,
+                            size: 26,
+                          ),
+                        ),
+                        label: "Upload",
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Icon(
+                            currentIndex == 3
+                                ? Icons.library_music
+                                : Icons.library_music_outlined,
+                            size: 26,
+                          ),
+                        ),
+                        label: "Biblioteca",
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.upload),
-                label: "Upload",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.library_music),
-                label: "Biblioteca",
-              ),
-            ],
+            ),
           ),
           onProfileTap: openProfile,
           child: showProfile ? ProfileScreen(user: user) : pages[currentIndex],

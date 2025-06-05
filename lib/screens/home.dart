@@ -5,13 +5,16 @@ import 'package:jammies_app/widgets/posts/post_list.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Inicio')),
-      body: PostList(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showPostForm(context),
-        backgroundColor: const Color(0xFF86CECB),
-        child: const Icon(Icons.edit),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 80),
+      child: Scaffold(
+        appBar: AppBar(title: Text('Inicio')),
+        body: PostList(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _showPostForm(context),
+          backgroundColor: const Color(0xFF86CECB),
+          child: const Icon(Icons.edit),
+        ),
       ),
     );
   }
