@@ -65,4 +65,23 @@ class ApiClient {
     final headers = await _authHeaders();
     return http.delete(Uri.parse('$_baseUrl$endpoint'), headers: headers);
   }
+
+  Future<http.Response> postTrack(
+    String endpoint,
+    String title,
+    http.MultipartFile audio,
+    http.MultipartFile cover,
+  ) async {
+    final headers = await _authHeaders();
+    final uri = Uri.parse('$_baseUrl$endpoint');
+    final request = http.MultipartRequest('POST', uri);
+    request.fields['title'] = title;
+    request.files.add(audio);
+    request.files.add(cover);
+
+    request.headers.addAll(headers);
+
+    final streamedResponse = await request.send();
+    return http.Response.fromStream(streamedResponse);
+  }
 }

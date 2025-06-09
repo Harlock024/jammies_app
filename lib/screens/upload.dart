@@ -1,144 +1,382 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
-class UploadScreen extends StatefulWidget {
-  const UploadScreen({super.key});
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+
+import 'package:jammies_app/services/track_services.dart';
+import 'package:jammies_app/widgets/tracks/track_upload_form.dart';
+
+class TrackUploadScreen extends StatefulWidget {
+  const TrackUploadScreen({Key? key}) : super(key: key);
 
   @override
-  State<UploadScreen> createState() => _UploadScreenState();
+  State<TrackUploadScreen> createState() => _TrackUploadScreenState();
 }
 
-class _UploadScreenState extends State<UploadScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController nameController = TextEditingController();
-  String? selectedAlbum;
-  String? coverPath;
-  String? audioPath;
+class _TrackUploadScreenState extends State<TrackUploadScreen>
+    with TickerProviderStateMixin {
+  bool _isLoading = false;
+  String? _uploadMessage;
+  bool _isSuccess = false;
 
-  List<String> albums = ['Álbum 1', 'Álbum 2', 'Single'];
+  final TrackService _trackService = TrackService();
 
-  void pickCover() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.image);
-    if (result != null) {
+  late AnimationController _backgroundController;
+  late AnimationController _successController;
+  late Animation<double> _backgroundAnimation;
+  late Animation<double> _successAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundController = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    );
+    _successController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _backgroundAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _backgroundController, curve: Curves.easeInOut),
+    );
+    _successAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _successController, curve: Curves.elasticOut),
+    );
+
+    _backgroundController.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _backgroundController.dispose();
+    _successController.dispose();
+    super.dispose();
+  }
+
+  // Aquí integrarías tu función postTrack
+  Future<void> _uploadTrack(
+    String title,
+    File audioFile,
+    File coverFile,
+  ) async {
+    setState(() {
+      _isLoading = true;
+      _uploadMessage = null;
+      _isSuccess = false;
+    });
+
+    try {
+      // Simular el proceso de upload
+      // En tu implementación real, llamarías a tu API service aquí
+
+      final audioMultipart = http.MultipartFile.fromBytes(
+        'audio',
+        await audioFile.readAsBytes(),
+        filename: audioFile.path.split('/').last,
+      );
+
+      final coverMultipart = http.MultipartFile.fromBytes(
+        'cover',
+        await coverFile.readAsBytes(),
+        filename: coverFile.path.split('/').last,
+      );
+
+      if (await _trackService.createTrack(
+        title,
+        audioMultipart,
+        coverMultipart,
+      )) {
+        _uploadMessage = 'Track uploaded successfully! 🎵';
+        _isSuccess = true;
+        _isLoading = false;
+      } else {
+        _uploadMessage = 'Track upload failed!';
+        _isSuccess = false;
+        _isLoading = false;
+      }
+    } catch (e) {
       setState(() {
-        coverPath = result.files.single.path;
+        _isLoading = false;
+        _isSuccess = false;
+        _uploadMessage = 'Upload failed: ${e.toString()}';
       });
     }
-  }
-
-  void pickAudio() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.audio);
-    if (result != null) {
-      setState(() {
-        audioPath = result.files.single.path;
-      });
-    }
-  }
-
-  void submit() {
-    if (_formKey.currentState!.validate()) {
-      print('Canción: ${nameController.text}');
-      print('Álbum: $selectedAlbum');
-      print('Portada: $coverPath');
-      print('Audio: $audioPath');
-    }
-  }
-
-  InputDecoration _inputDecoration(String label) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: const TextStyle(color: Color(0xFF86CECB)),
-      enabledBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Color(0xFF86CECB)),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Color(0xFF86CECB), width: 2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-    );
-  }
-
-  Widget _styledButton(
-    String text,
-    VoidCallback onPressed, {
-    bool isPrimary = false,
-  }) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isPrimary ? const Color(0xFF86CECB) : Colors.white,
-        foregroundColor: isPrimary ? Colors.white : const Color(0xFF86CECB),
-        side: isPrimary ? null : const BorderSide(color: Color(0xFF86CECB)),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: isPrimary ? 2 : 0,
-      ),
-      onPressed: onPressed,
-      child: Text(text),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Upload your Track"),
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF86CECB),
-        elevation: 1,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: nameController,
-                decoration: _inputDecoration("Nombre de la canción"),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty ? 'Requerido' : null,
+      backgroundColor: const Color(0xFF0f0f23),
+      body: AnimatedBuilder(
+        animation: _backgroundAnimation,
+        builder: (context, child) {
+          return Container(
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                center: Alignment.topRight,
+                radius: 1.0 + (_backgroundAnimation.value * 0.3),
+                colors: [
+                  Color.lerp(
+                    const Color(0xFF1a1a2e),
+                    const Color(0xFF7c3aed),
+                    _backgroundAnimation.value * 0.1,
+                  )!,
+                  const Color(0xFF0f0f23),
+                ],
               ),
-              const SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: selectedAlbum,
-                decoration: _inputDecoration("Selecciona un álbum"),
-                items:
-                    albums
-                        .map(
-                          (album) => DropdownMenuItem(
-                            value: album,
-                            child: Text(album),
+            ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  // App Bar personalizada
+                  _buildCustomAppBar(),
+
+                  // Contenido principal
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+
+                          const SizedBox(height: 32),
+
+                          TrackUploadForm(
+                            onUpload: _uploadTrack,
+                            isLoading: _isLoading,
                           ),
-                        )
-                        .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedAlbum = value;
-                  });
-                },
-                validator:
-                    (value) => value == null ? 'Selecciona un álbum' : null,
+
+                          const SizedBox(height: 24),
+
+                          // Mensaje de estado
+                          if (_uploadMessage != null) _buildStatusMessage(),
+
+                          const SizedBox(height: 32),
+
+                          // Tips section
+                          _buildTipsSection(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              _styledButton(
-                coverPath == null
-                    ? "Seleccionar portada"
-                    : "Portada seleccionada ",
-                pickCover,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCustomAppBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2d3748).withOpacity(0.8),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFF4a5568).withOpacity(0.5),
+                ),
               ),
-              const SizedBox(height: 12),
-              _styledButton(
-                audioPath == null ? "Seleccionar audio" : "Audio seleccionado ",
-                pickAudio,
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
+                size: 18,
               ),
-              const SizedBox(height: 32),
-              _styledButton("Subir canción", submit, isPrimary: true),
+            ),
+          ),
+          const Spacer(),
+          const Text(
+            'Upload Track',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF7c3aed).withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFF7c3aed).withOpacity(0.3),
+              ),
+            ),
+            child: const Icon(
+              Icons.help_outline,
+              color: Color(0xFF7c3aed),
+              size: 18,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value, IconData icon) {
+    return Expanded(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF7c3aed).withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: const Color(0xFF7c3aed), size: 24),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(label, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusMessage() {
+    return AnimatedBuilder(
+      animation: _successAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _isSuccess ? _successAnimation.value : 1.0,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color:
+                  _isSuccess
+                      ? const Color(0xFF10b981).withOpacity(0.2)
+                      : const Color(0xFFef4444).withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color:
+                    _isSuccess
+                        ? const Color(0xFF10b981)
+                        : const Color(0xFFef4444),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  _isSuccess ? Icons.check_circle : Icons.error,
+                  color:
+                      _isSuccess
+                          ? const Color(0xFF10b981)
+                          : const Color(0xFFef4444),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    _uploadMessage!,
+                    style: TextStyle(
+                      color:
+                          _isSuccess
+                              ? const Color(0xFF10b981)
+                              : const Color(0xFFef4444),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTipsSection() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1a202c).withOpacity(0.6),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF2d3748).withOpacity(0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF3b82f6).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.lightbulb_outline,
+                  color: Color(0xFF3b82f6),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Upload Tips',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
-        ),
+          const SizedBox(height: 16),
+          _buildTipItem('Use high-quality audio files (320kbps MP3 or FLAC)'),
+          _buildTipItem('Cover images should be at least 1000x1000 pixels'),
+          _buildTipItem('Choose descriptive titles for better discoverability'),
+          _buildTipItem('Supported audio formats: MP3, WAV, FLAC, M4A'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTipItem(String tip) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 8, right: 12),
+            width: 4,
+            height: 4,
+            decoration: const BoxDecoration(
+              color: Color(0xFF3b82f6),
+              shape: BoxShape.circle,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              tip,
+              style: TextStyle(
+                color: Colors.grey[300],
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
