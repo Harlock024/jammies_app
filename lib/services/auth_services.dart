@@ -49,7 +49,7 @@ class AuthServices {
       }),
     );
 
-    if (res.statusCode == 200) {
+    if (res.statusCode == 201) {
       final data = jsonDecode(res.body);
       final user = UserResponse.fromJson(data['user']);
       final tokens = TokensResponse.fromJson(data['tokensResponse']);

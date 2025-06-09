@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:jammies_app/models/track.dart';
 import 'package:jammies_app/services/api_client.dart';
+import 'package:http/http.dart' as http;
 
 class TrackService {
   final _client = ApiClient();
@@ -31,6 +32,19 @@ class TrackService {
       return track;
     } else {
       throw Exception('Failed to load track');
+    }
+  }
+
+  Future<bool> createTrack(
+    String title,
+    http.MultipartFile audio,
+    http.MultipartFile cover,
+  ) async {
+    final response = await _client.postTrack('/track', title, audio, cover);
+    if (response.statusCode != 201) {
+      return false;
+    } else {
+      return true;
     }
   }
 }

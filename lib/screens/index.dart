@@ -86,7 +86,7 @@ class _IndexPageState extends State<IndexPage> {
   final List<Widget> pages = [
     HomeScreen(),
     SearchScreen(),
-    UploadScreen(),
+    TrackUploadScreen(),
     LibraryScreen(),
   ];
 
