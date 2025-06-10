@@ -48,7 +48,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    //await _devicesServices.deleteDevice();
+    await _devicesServices.deleteDevice();
     await _authServices.logout();
     _isAuthenticated = false;
     notifyListeners();
