@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'package:dio/dio.dart';
 
 import 'package:jammies_app/services/track_services.dart';
 import 'package:jammies_app/widgets/tracks/track_upload_form.dart';
@@ -70,21 +69,15 @@ class _TrackUploadScreenState extends State<TrackUploadScreen>
     });
 
     try {
-      // Simular el proceso de upload
-      // En tu implementación real, llamarías a tu API service aquí
-
-      final audioMultipart = http.MultipartFile.fromBytes(
-        'audio',
+      final audioMultipart = MultipartFile.fromBytes(
         await audioFile.readAsBytes(),
         filename: audioFile.path.split('/').last,
       );
 
-      final coverMultipart = http.MultipartFile.fromBytes(
-        'cover',
+      final coverMultipart = MultipartFile.fromBytes(
         await coverFile.readAsBytes(),
         filename: coverFile.path.split('/').last,
       );
-
       if (await _trackService.createTrack(
         title,
         audioMultipart,

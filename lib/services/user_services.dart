@@ -11,7 +11,7 @@ class UserServices {
     final response = await _client.get('/user');
 
     if (response.statusCode == 200) {
-      return User.fromJson(jsonDecode(response.body));
+      return User.fromJson(jsonDecode(response.data));
     } else {
       print('Error al obtener perfil: ${response.statusCode}');
       return null;

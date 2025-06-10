@@ -4,7 +4,7 @@ import 'package:jammies_app/models/track.dart';
 import 'package:jammies_app/services/track_services.dart';
 import 'package:jammies_app/services/post_services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 class PostForm extends StatefulWidget {
   const PostForm({super.key});
@@ -57,11 +57,11 @@ class _PostFormState extends State<PostForm> {
     });
 
     try {
-      http.MultipartFile? imageFile;
+      MultipartFile? imageFile;
       if (_selectedImage != null) {
-        imageFile = await http.MultipartFile.fromPath(
-          'image',
+        imageFile = await MultipartFile.fromFile(
           _selectedImage!.path,
+          filename: _selectedImage!.path.split('/').last, // nombre archivo
         );
         print('Imagen seleccionada: ${_selectedImage!.path}');
       }

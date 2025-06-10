@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jammies_app/models/device.dart';
 import 'package:jammies_app/services/api_client.dart';
@@ -10,11 +8,13 @@ class DevicesServices {
   final _storage = const FlutterSecureStorage();
 
   Future<bool> addNewDevice() async {
-    final response = await _client.post('/device', {
-      'device_name': await DeviceUtils.getDeviceName(),
-    });
+    final deviceName = await DeviceUtils.getDeviceName();
+    print("DEBUG $deviceName");
+
+    final response = await _client.post('/device', {'device_name': deviceName});
+
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = response.data;
       final deviceId = data['device_id'];
       final deviceName = data['device_name'];
 
@@ -30,9 +30,11 @@ class DevicesServices {
     final response = await _client.get('/device');
 
     if (response.statusCode == 200) {
-      return (jsonDecode(response.body) as List)
+      final List devicesJson = response.data;
+      return devicesJson
           .map((json) => Device.fromJson(json))
-          .toList();
+          .toList()
+          .cast<Device>();
     } else {
       throw Exception('Failed to load devices');
     }
@@ -41,6 +43,7 @@ class DevicesServices {
   Future<void> deleteDevice() async {
     final deviceId = await _storage.read(key: 'device_id');
     if (deviceId == null) return;
+
     final response = await _client.delete('/device/$deviceId');
     if (response.statusCode != 204) {
       throw Exception('Failed to delete device');
