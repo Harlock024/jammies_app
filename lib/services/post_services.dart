@@ -1,8 +1,6 @@
-import 'dart:convert';
-
 import 'package:jammies_app/models/post.dart';
 import 'package:jammies_app/services/api_client.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 class PostService {
   final _client = ApiClient();
@@ -11,9 +9,8 @@ class PostService {
     final response = await _client.get('/post');
 
     if (response.statusCode == 200) {
-      return (jsonDecode(response.body) as List)
-          .map((json) => Post.fromJson(json))
-          .toList();
+      final List postsJson = response.data;
+      return postsJson.map((json) => Post.fromJson(json)).toList().cast<Post>();
     } else {
       throw Exception('Failed to load posts');
     }
@@ -21,7 +18,7 @@ class PostService {
 
   Future<void> createPost(
     String content,
-    http.MultipartFile? imageFile,
+    MultipartFile? imageFile,
     String? trackId,
   ) async {
     final fields = {
@@ -36,7 +33,7 @@ class PostService {
     );
 
     if (response.statusCode != 201) {
-      throw Exception('Error al crear post: ${response.body}');
+      throw Exception('Error al crear post: ${response.data}');
     }
   }
 }

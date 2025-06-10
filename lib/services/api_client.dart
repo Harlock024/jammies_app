@@ -1,87 +1,119 @@
-import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 import 'package:jammies_app/services/api_url.dart';
 
 class ApiClient {
-  final _storage = const FlutterSecureStorage();
-  final String _baseUrl = ApiUrl;
+  final Dio _dio = Dio(BaseOptions(baseUrl: ApiUrl));
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  Future<Map<String, String>> _authHeaders() async {
-    final token = await _storage.read(key: 'accessToken');
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-  }
+  ApiClient() {
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await _storage.read(key: 'accessToken');
+          print("TOKEN DIO DEBUG: $token");
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          options.headers['Content-Type'] = 'application/json';
+          return handler.next(options);
+        },
+        onError: (DioException error, handler) async {
+          final requestOptions = error.requestOptions;
 
-  Future<http.Response> get(String endpoint) async {
-    final headers = await _authHeaders();
-    return http.get(Uri.parse('$_baseUrl$endpoint'), headers: headers);
-  }
+          if (error.response?.statusCode == 401 &&
+              !requestOptions.extra.containsKey('retry')) {
+            requestOptions.extra['retry'] = true;
 
-  Future<http.Response> post(String endpoint, Map<String, dynamic> body) async {
-    final headers = await _authHeaders();
-    return http.post(
-      Uri.parse('$_baseUrl$endpoint'),
-      headers: headers,
-      body: jsonEncode(body),
+            final refreshToken = await _storage.read(key: 'refreshToken');
+            if (refreshToken == null) return handler.next(error);
+
+            try {
+              final refreshResponse = await _dio.post(
+                '/auth/refresh',
+                data: {'refreshToken': refreshToken},
+                options: Options(headers: {'Content-Type': 'application/json'}),
+              );
+
+              final newAccessToken = refreshResponse.data['accessToken'];
+              await _storage.write(key: 'access_token', value: newAccessToken);
+
+              // Retry original request
+              final newOptions = Options(
+                method: requestOptions.method,
+                headers: {
+                  ...requestOptions.headers,
+                  'Authorization': 'Bearer $newAccessToken',
+                },
+              );
+
+              final retryResponse = await _dio.request(
+                requestOptions.path,
+                data: requestOptions.data,
+                queryParameters: requestOptions.queryParameters,
+                options: newOptions,
+              );
+
+              return handler.resolve(retryResponse);
+            } catch (_) {
+              await _storage.deleteAll();
+              return handler.next(error);
+            }
+          }
+
+          return handler.next(error);
+        },
+      ),
     );
   }
 
-  Future<http.Response> postMultipart(
+  // GET
+  Future<Response> get(String endpoint) async {
+    return _dio.get(endpoint);
+  }
+
+  // POST (JSON)
+  Future<Response> post(String endpoint, Map<String, dynamic> data) async {
+    return _dio.post(endpoint, data: data);
+  }
+
+  // PUT
+  Future<Response> put(String endpoint, Map<String, dynamic> data) async {
+    return _dio.put(endpoint, data: data);
+  }
+
+  // DELETE
+  Future<Response> delete(String endpoint) async {
+    return _dio.delete(endpoint);
+  }
+
+  // POST Multipart con campos opcionales
+  Future<Response> postMultipart(
     String endpoint, {
     required Map<String, String> fields,
-    http.MultipartFile? file,
+    MultipartFile? file,
   }) async {
-    final headers = await _authHeaders();
-    final uri = Uri.parse('$_baseUrl$endpoint');
-    final request = http.MultipartRequest('POST', uri);
-
-    fields.forEach((key, value) {
-      request.fields[key] = value;
+    final formData = FormData.fromMap({
+      ...fields,
+      if (file != null) 'file': file,
     });
 
-    if (file != null) {
-      request.files.add(file);
-    }
-
-    request.headers.addAll(headers);
-
-    final streamedResponse = await request.send();
-    return http.Response.fromStream(streamedResponse);
+    return _dio.post(endpoint, data: formData);
   }
 
-  Future<http.Response> put(String endpoint, Map<String, dynamic> body) async {
-    final headers = await _authHeaders();
-    return http.put(
-      Uri.parse('$_baseUrl$endpoint'),
-      headers: headers,
-      body: jsonEncode(body),
-    );
-  }
-
-  Future<http.Response> delete(String endpoint) async {
-    final headers = await _authHeaders();
-    return http.delete(Uri.parse('$_baseUrl$endpoint'), headers: headers);
-  }
-
-  Future<http.Response> postTrack(
+  // POST track (audio + cover + título)
+  Future<Response> postTrack(
     String endpoint,
     String title,
-    http.MultipartFile audio,
-    http.MultipartFile cover,
+    MultipartFile audio,
+    MultipartFile cover,
   ) async {
-    final headers = await _authHeaders();
-    final uri = Uri.parse('$_baseUrl$endpoint');
-    final request = http.MultipartRequest('POST', uri);
-    request.fields['title'] = title;
-    request.files.add(audio);
-    request.files.add(cover);
+    final formData = FormData.fromMap({
+      'title': title,
+      'audio': audio,
+      'cover': cover,
+    });
 
-    request.headers.addAll(headers);
-
-    final streamedResponse = await request.send();
-    return http.Response.fromStream(streamedResponse);
+    return _dio.post(endpoint, data: formData);
   }
 }
