@@ -169,24 +169,6 @@ class _TrackUploadScreenState extends State<TrackUploadScreen>
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF2d3748).withOpacity(0.8),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFF4a5568).withOpacity(0.5),
-                ),
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.white,
-                size: 18,
-              ),
-            ),
-          ),
           const Spacer(),
           const Text(
             'Upload Track',
@@ -197,21 +179,6 @@ class _TrackUploadScreenState extends State<TrackUploadScreen>
             ),
           ),
           const Spacer(),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF7c3aed).withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: const Color(0xFF7c3aed).withOpacity(0.3),
-              ),
-            ),
-            child: const Icon(
-              Icons.help_outline,
-              color: Color(0xFF7c3aed),
-              size: 18,
-            ),
-          ),
         ],
       ),
     );
