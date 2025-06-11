@@ -95,7 +95,7 @@ class ApiClient {
   }) async {
     final formData = FormData.fromMap({
       ...fields,
-      if (file != null) 'file': file,
+      if (file != null) 'image': file,
     });
 
     return _dio.post(endpoint, data: formData);
@@ -113,7 +113,6 @@ class ApiClient {
       'audio': audio,
       'cover': cover,
     });
-
     return _dio.post(endpoint, data: formData);
   }
 }

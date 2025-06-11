@@ -61,8 +61,9 @@ class _PostFormState extends State<PostForm> {
       if (_selectedImage != null) {
         imageFile = await MultipartFile.fromFile(
           _selectedImage!.path,
-          filename: _selectedImage!.path.split('/').last, // nombre archivo
+          filename: _selectedImage!.path.split('/').last,
         );
+
         print('Imagen seleccionada: ${_selectedImage!.path}');
       }
 
